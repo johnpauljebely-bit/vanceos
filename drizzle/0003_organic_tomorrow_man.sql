@@ -1,0 +1,1 @@
+ALTER TABLE "live_units" ADD COLUMN "status" text DEFAULT 'available' NOT NULL;
