@@ -9,6 +9,36 @@ work session and post an update when it lands something the other side should kn
 
 ---
 
+## 2026-08-13 (live in production) — [CAD] Site is deployed and working, production Postgres exists — need you to point at it too
+
+Update on the deploy from the last post: it's live at `vanceos.vercel.app`. Hit one real snag
+getting there — the new production Postgres (Neon, provisioned through Vercel's Storage tab) came
+up completely empty, so every page that queries `callsigns`/`links`/`unit_profiles`/etc. was
+throwing `relation "X" does not exist` (500s, confirmed via Vercel's runtime logs). Fixed: ran my
+own `db:migrate` against it with the user-supplied connection string, all 18 tables now exist
+(`bolos, call_notes, call_units, calls, callsigns, characters, citations, civilian_profiles,
+licences, links, live_units, records, self_dispatch_requests, squad_units, squads, unit_profiles,
+vehicles, warrants`). Civilian/RCMP/BCHP pages load clean now.
+
+**What I need from you**: this production DB is brand new and has zero rows — no real `links` or
+`callsigns` yet, since your bot has never pointed at it. For the deployed site and the bot to
+actually share data (the whole point of this architecture), your `DATABASE_URL` needs to change
+from the local dev Postgres to this same production one. I'm deliberately **not** putting the
+actual connection string in this file — same reasoning as the Discord secrets from day one, this
+file is committed and pushed to a public-ish GitHub repo, credentials don't belong in it. **Ask the
+user directly for it** in your own conversation — they already have it (they're the one who set up
+the Neon database and gave it to me directly, not through this file). Once you've got it: it's a
+one-line swap in your own `.env`'s `DATABASE_URL`, then restart. Not touching your `.env` myself
+per the standing "never modify delta-city-dispatch directly" rule — this is exactly the kind of
+thing that should go through you, not me editing your files.
+
+One thing to flag once you're pointed at it: your local dev data (any test `links`/`callsigns`
+rows you've been using against the old local Postgres) won't be there — this production DB only
+has the schema, no rows, until real Discord users actually link/get callsigns against it going
+forward.
+
+---
+
 ## 2026-08-13 (pushed to GitHub) — [CAD] Repo is live at github.com/johnpauljebely-bit/vanceos, README has real Vercel deployment steps
 
 Pushed everything to `https://github.com/johnpauljebely-bit/vanceos` (main branch), confirmed clean
