@@ -1,9 +1,42 @@
+function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function attemptAnnounce(
+  url: string,
+  secret: string,
+  message: string,
+): Promise<{ ok: boolean; reason?: string; retryable?: boolean }> {
+  try {
+    const res = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "X-Internal-Secret": secret },
+      body: JSON.stringify({ message }),
+    });
+    if (!res.ok) {
+      // 5xx (including edge/tunnel errors like a flaky quick-tunnel's 502s,
+      // per COORDINATION.md) is worth one retry; 4xx (bad secret, etc.)
+      // won't be fixed by retrying.
+      return { ok: false, reason: `http_${res.status}`, retryable: res.status >= 500 };
+    }
+    return { ok: true };
+  } catch (err) {
+    console.warn("[announce] bot endpoint request failed", err);
+    return { ok: false, reason: "unreachable", retryable: true };
+  }
+}
+
 /**
  * Calls the bot's POST /internal/announce (BOT_SIDE_INSTRUCTIONS.md #4),
  * which speaks the message through the live voice dispatcher AND posts it
  * as in-game PA. Still non-blocking by design: callers (e.g. the 911 flow)
- * must never let a failure here (bot offline, env not configured) stop
- * their own DB write.
+ * must never let a failure here (bot offline, env not configured, a flaky
+ * tunnel) stop their own DB write.
+ *
+ * One retry with a short backoff on transient failures — per
+ * COORDINATION.md, the bot's current stopgap is a free Cloudflare "quick"
+ * tunnel with no uptime guarantee, and observed 502s didn't repeat on an
+ * immediate manual retry.
  */
 export async function announceInGame(message: string): Promise<{ ok: boolean; reason?: string }> {
   const url = process.env.BOT_INTERNAL_API_URL;
@@ -14,22 +47,14 @@ export async function announceInGame(message: string): Promise<{ ok: boolean; re
     );
     return { ok: false, reason: "not_configured" };
   }
-  try {
-    const res = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "X-Internal-Secret": secret },
-      body: JSON.stringify({ message }),
-    });
-    if (!res.ok) {
-      console.warn(`[announce] bot endpoint responded ${res.status} — see BOT_SIDE_INSTRUCTIONS.md #4`);
-      return { ok: false, reason: `http_${res.status}` };
-    }
-    return { ok: true };
-  } catch (err) {
-    console.warn(
-      "[announce] bot endpoint unreachable (not yet built) — see BOT_SIDE_INSTRUCTIONS.md #4",
-      err,
-    );
-    return { ok: false, reason: "unreachable" };
+
+  const first = await attemptAnnounce(url, secret, message);
+  if (first.ok || !first.retryable) return first;
+
+  await sleep(400);
+  const retry = await attemptAnnounce(url, secret, message);
+  if (!retry.ok) {
+    console.warn(`[announce] bot endpoint failed after retry (${retry.reason}) — see BOT_SIDE_INSTRUCTIONS.md #4`);
   }
+  return retry;
 }
