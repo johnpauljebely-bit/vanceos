@@ -64,6 +64,11 @@ export const calls = pgTable("calls", {
   createdBy: text("created_by"),
   createdAt: text("created_at").notNull(),
   clearedAt: text("cleared_at"),
+  // Proxy severity signal for ER:LC-native calls (e.g. robberies) — the
+  // bot correlates the reporting/nearest player's live wanted_stars at
+  // call-creation time, per COORDINATION.md. Null for CAD-originated calls
+  // (911/311/traffic stop/panic), which have no such signal.
+  wantedStars: integer("wanted_stars"),
 });
 
 export const callUnits = pgTable(

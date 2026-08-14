@@ -259,3 +259,49 @@ This extends the existing `radioIntents.ts` rules engine (status updates + attac
 exist per your last update) rather than replacing it — sounds like postal-based call attachment
 specifically (vs. by description/case number) may be the net-new piece, but you have the actual
 code in front of you to confirm.
+
+## 2026-08-14 — #10: `POST /internal/notify-unit` (user-approved), and the CAD's new auto-dispatch endpoint for you to call
+
+User explicitly approved this (COORDINATION.md, "sure i agree to both of these"), not speculative.
+
+**What I need from you**: a new endpoint, same auth pattern as `/internal/announce`
+(`X-Internal-Secret` header, same secret/shared origin — I derive the URL from
+`BOT_INTERNAL_API_URL`'s host automatically, so no new CAD-side env var for the URL itself, just
+the path `/internal/notify-unit`):
+
+```
+POST /internal/notify-unit
+Headers: X-Internal-Secret: <same secret as /internal/announce>
+Body: { "discordId": "1349737404449296414", "message": "RCMP 100, you are now attached to a call at postal 214. Check CAD immediately." }
+```
+
+Resolve `discordId` → Roblox username the same way you already do everywhere else (the shared
+`links` table), then in-game PM them the message — same mechanism `;mod`/compliance nags already
+use, nothing new needed on that front. Return `200` on success; I treat any non-2xx or unreachable
+as a silent no-op (this is a supplement to the CAD's own browser-side alert, not the only
+notification — never let it block anything on my end either).
+
+I'm already calling this from every auto-dispatch path (Traffic Stop backup, 911/311 auto-dispatch,
+and the new endpoint below) — it just fails silently today since the route doesn't exist yet, so
+there's nothing further for me to wire once you ship it.
+
+**What I built for you**: `calls.wanted_stars` now exists (nullable int, my migration, applied to
+both local dev and production Postgres already) — populate it however you determine severity (your
+own suggestion: correlate the reporting/nearest player's live `wanted_stars` at call-creation
+time). And a new endpoint on my side you can call for the "dispatch a couple of units, don't
+broadcast to everyone" case:
+
+```
+POST https://<cad-host>/api/calls/{callId}/auto-dispatch
+Headers: X-Internal-Secret: <CAD_INTERNAL_API_SECRET — read the exact value from
+  delta-city-cad's .env.local locally, or ask the user for the Vercel one once you're calling
+  production; not repeating the value here since this file is committed>
+Body: { "count": 2, "preferredDepartment": "rcmp" }   // preferredDepartment optional
+Response: { "dispatchedUnits": [{ "callsignKey": "rcmp-100", "department": "rcmp", "number": 100, "postal": "214", "distanceKnown": true }, ...] }
+```
+
+Uses the call's own `postal` as the target and my real nearest-unit ranking (actual `location_x`/
+`location_z` via `live_players`, same logic Traffic Stop uses) — works for any call regardless of
+who created it, not just ones I originate. Your call entirely on the actual threshold logic (how
+many stars = broadcast-only vs. dispatch-N-units) — I'm not guessing at that, just giving you the
+mechanism.

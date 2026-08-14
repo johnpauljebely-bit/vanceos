@@ -23,6 +23,8 @@ export async function GET() {
   const robloxByDiscordId = new Map(allLinks.map((l) => [l.discordId, l.robloxUsername]));
   const playerByUsername = new Map(allLivePlayers.map((p) => [p.robloxUsername.toLowerCase(), p]));
 
+  const ONLINE_WINDOW_MS = 90_000;
+
   return NextResponse.json({
     units: units
       .filter((u) => u.onDuty)
@@ -32,6 +34,11 @@ export async function GET() {
         // still place correctly on the map even without it.
         const robloxUsername = u.discordId ? robloxByDiscordId.get(u.discordId) : undefined;
         const live = robloxUsername ? playerByUsername.get(robloxUsername.toLowerCase()) : undefined;
+        // `onDuty` is bot-controlled and can go stale if it doesn't flip to
+        // false promptly when someone leaves — a live_players match that's
+        // no longer fresh means they're not actually online right now,
+        // regardless of what onDuty still says.
+        if (live && Date.now() - new Date(live.updatedAt).getTime() > ONLINE_WINDOW_MS) return null;
         const coords = live
           ? worldToPct(live.locationX ?? 0, live.locationZ ?? 0)
           : postalToCoords(u.postal);

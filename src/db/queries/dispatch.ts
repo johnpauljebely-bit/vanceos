@@ -4,8 +4,9 @@ import { links, liveUnits } from "@/db/schema";
 import { livePlayers } from "@/db/botOwnedTables";
 import { pctToWorld } from "@/lib/mapTransform";
 import { postalToCoords } from "@/lib/postalCoords";
-import { assignUnitToCall } from "@/db/queries/calls";
+import { assignUnitToCall, getCall } from "@/db/queries/calls";
 import { setUnitStatus } from "@/db/queries/liveUnits";
+import { notifyUnit } from "@/lib/announce";
 
 export interface DispatchedUnit {
   callsignKey: string;
@@ -93,8 +94,14 @@ export function unitsNeededForCallType(type: string): number {
   return type === "civil" ? 1 : 2;
 }
 
-/** Attaches each dispatched unit to the call and sets them enroute, and marks which call they're now tied to (drives the browser dispatch alert). */
+/**
+ * Attaches each dispatched unit to the call and sets them enroute, marks
+ * which call they're now tied to (drives the browser dispatch alert), and
+ * best-effort notifies them via the bot too (no-ops today, see
+ * `notifyUnit` — covers officers who don't have the CAD tab open).
+ */
 export async function attachDispatchedUnits(callId: string, units: DispatchedUnit[]) {
+  const call = await getCall(callId);
   for (const u of units) {
     const row = await db.select().from(liveUnits).where(eq(liveUnits.callsignKey, u.callsignKey)).limit(1);
     const discordId = row[0]?.discordId;
@@ -102,5 +109,9 @@ export async function attachDispatchedUnits(callId: string, units: DispatchedUni
     await assignUnitToCall(callId, discordId);
     await setUnitStatus(u.callsignKey, "enroute");
     await db.update(liveUnits).set({ callId, updatedAt: new Date() }).where(eq(liveUnits.callsignKey, u.callsignKey));
+    void notifyUnit(
+      discordId,
+      `${u.department.toUpperCase()} ${u.number}, you are now attached to a call at postal ${call?.postal ?? "unknown"}. Check CAD immediately.`,
+    );
   }
 }

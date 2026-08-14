@@ -1,7 +1,9 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { User, Phone, Plus, Minus, Home, AlertCircle } from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { User, Phone, Plus, Minus, Home, AlertCircle, ArrowLeft } from "lucide-react";
 import { useLiveQuery } from "@/lib/useLiveQuery";
 import { UNIT_STATUS_COLOR, UNIT_STATUS_LABEL, type UnitStatus } from "@/lib/unitStatus";
 import { cn } from "@/lib/cn";
@@ -37,6 +39,11 @@ function jitter(index: number): [number, number] {
 }
 
 export function LiveMapView() {
+  const pathname = usePathname();
+  // Path is always /leo/{department}/cad/map — derive the CAD link from it
+  // rather than threading department down as a prop.
+  const department = pathname.split("/")[2] ?? "";
+  const cadHref = `/leo/${department}/cad`;
   const { data } = useLiveQuery<{ units: MapUnit[]; calls: MapCall[] }>("/api/leo/map-data", 4000);
   const [showUnits, setShowUnits] = useState(true);
   const [showCalls, setShowCalls] = useState(true);
@@ -89,7 +96,15 @@ export function LiveMapView() {
   return (
     <div className="relative flex flex-1 flex-col overflow-hidden bg-black">
       <div className="flex items-center justify-between border-b border-border-subtle bg-surface px-4 py-3">
-        <h1 className="text-lg font-bold text-fg">Map</h1>
+        <div className="flex items-center gap-4">
+          <Link
+            href={cadHref}
+            className="inline-flex items-center gap-1.5 text-sm font-medium text-fg-muted hover:text-accent-teal"
+          >
+            <ArrowLeft size={14} /> Back to CAD
+          </Link>
+          <h1 className="text-lg font-bold text-fg">Map</h1>
+        </div>
         <p className="text-xs text-fg-muted">
           Live positions from real in-game coordinates where available, postal-level otherwise.
         </p>
