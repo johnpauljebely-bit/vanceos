@@ -74,6 +74,18 @@ export function CadPanel({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Heartbeat for the bot's "on duty, not on the CAD" reminder poller (bot
+  // reads this via cad_activity, treats anything within ~3min as active) —
+  // fire immediately, then every 90s while this panel stays mounted.
+  useEffect(() => {
+    const beat = () => {
+      fetch("/api/cad-activity/heartbeat", { method: "POST" }).catch(() => {});
+    };
+    beat();
+    const id = setInterval(beat, 90_000);
+    return () => clearInterval(id);
+  }, []);
+
   const [attachedCallId, setAttachedCallId] = useState(initialCall?.id ?? null);
   const [viewedCall, setViewedCall] = useState<ActiveCall | null>(initialCall);
   const canManage = selfDispatchState === "on" || viewedCall === null || viewedCall.id === attachedCallId;

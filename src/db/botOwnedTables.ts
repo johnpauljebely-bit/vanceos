@@ -23,3 +23,15 @@ export const livePlayers = pgTable("live_players", {
   wantedStars: integer("wanted_stars"),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });
+
+/**
+ * cad_activity: bot-created and bot-owned (per COORDINATION.md 2026-08-14)
+ * — the CAD writes a heartbeat row here (upsert on every dashboard poll)
+ * while a linked user actually has the CAD open, so the bot's reminder
+ * poller can tell "on the dashboard right now" apart from "on duty but
+ * never opened it." Bot reads this, treats anything within ~3min as active.
+ */
+export const cadActivity = pgTable("cad_activity", {
+  discordId: text("discord_id").primaryKey(),
+  lastSeenAt: timestamp("last_seen_at", { withTimezone: true }).notNull().defaultNow(),
+});
