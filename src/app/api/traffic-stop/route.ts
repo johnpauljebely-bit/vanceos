@@ -3,6 +3,7 @@ import { z } from "zod";
 import { requireApiSession } from "@/lib/session";
 import { getUnitSession } from "@/lib/unitSession";
 import { announceInGame } from "@/lib/announce";
+import { toNatoPhonetic } from "@/lib/nato";
 import { upsertLeoCall } from "@/db/queries/calls";
 
 const schema = z.object({
@@ -25,9 +26,11 @@ export async function POST(request: Request) {
   }
 
   const { vehicleDescription, plate, postal, needsAdditional } = parsed.data;
-  const message =
-    `Traffic stop, unit ${unit.number}, vehicle ${vehicleDescription}, plate ${plate}, postal ${postal}. ` +
-    (needsAdditional ? "Requesting additional units." : "No additional units needed.");
+  const suffix = needsAdditional ? "Requesting additional units." : "No additional units needed.";
+  const message = `Traffic stop, unit ${unit.number}, vehicle ${vehicleDescription}, plate ${plate}, postal ${postal}. ${suffix}`;
+  // Spoken version reads the plate in NATO phonetics so it's actually
+  // intelligible over voice, per the user's ask (same convention as BOLO).
+  const spokenMessage = `Traffic stop, unit ${unit.number}, vehicle ${vehicleDescription}, plate ${toNatoPhonetic(plate)}, postal ${postal}. ${suffix}`;
 
   // Shows up on the Calls board like any other active call — especially
   // important when additional units are needed, so others can see and join.
@@ -44,6 +47,6 @@ export async function POST(request: Request) {
     createdBy: session.user.discordId,
   });
 
-  const result = await announceInGame(message);
+  const result = await announceInGame(message, spokenMessage);
   return NextResponse.json({ announced: result.ok, call });
 }

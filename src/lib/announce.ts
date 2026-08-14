@@ -6,12 +6,13 @@ async function attemptAnnounce(
   url: string,
   secret: string,
   message: string,
+  spokenMessage: string | undefined,
 ): Promise<{ ok: boolean; reason?: string; retryable?: boolean }> {
   try {
     const res = await fetch(url, {
       method: "POST",
       headers: { "Content-Type": "application/json", "X-Internal-Secret": secret },
-      body: JSON.stringify({ message }),
+      body: JSON.stringify(spokenMessage ? { message, spokenMessage } : { message }),
     });
     if (!res.ok) {
       // 5xx (including edge/tunnel errors like a flaky quick-tunnel's 502s,
@@ -37,8 +38,16 @@ async function attemptAnnounce(
  * COORDINATION.md, the bot's current stopgap is a free Cloudflare "quick"
  * tunnel with no uptime guarantee, and observed 502s didn't repeat on an
  * immediate manual retry.
+ *
+ * `spokenMessage` is optional — when given, it's what the voice dispatcher
+ * actually says (e.g. a plate spelled out in NATO phonetics), while
+ * `message` stays the literal text shown/PA'd. Falls back to `message` for
+ * speech if omitted.
  */
-export async function announceInGame(message: string): Promise<{ ok: boolean; reason?: string }> {
+export async function announceInGame(
+  message: string,
+  spokenMessage?: string,
+): Promise<{ ok: boolean; reason?: string }> {
   const url = process.env.BOT_INTERNAL_API_URL;
   const secret = process.env.BOT_INTERNAL_API_SECRET;
   if (!url || !secret) {
@@ -48,11 +57,11 @@ export async function announceInGame(message: string): Promise<{ ok: boolean; re
     return { ok: false, reason: "not_configured" };
   }
 
-  const first = await attemptAnnounce(url, secret, message);
+  const first = await attemptAnnounce(url, secret, message, spokenMessage);
   if (first.ok || !first.retryable) return first;
 
   await sleep(400);
-  const retry = await attemptAnnounce(url, secret, message);
+  const retry = await attemptAnnounce(url, secret, message, spokenMessage);
   if (!retry.ok) {
     console.warn(`[announce] bot endpoint failed after retry (${retry.reason}) — see BOT_SIDE_INSTRUCTIONS.md #4`);
   }
