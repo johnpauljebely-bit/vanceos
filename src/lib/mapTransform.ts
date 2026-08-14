@@ -20,3 +20,8 @@ export function worldToPct(x: number, z: number): [number, number] {
   const zPct = Z_SCALE * z + Z_OFFSET;
   return [Math.min(100, Math.max(0, xPct)), Math.min(100, Math.max(0, zPct))];
 }
+
+/** Inverse of worldToPct — used to turn a postal's map position back into approximate world coords for distance comparisons (nearest-unit dispatch). */
+export function pctToWorld(xPct: number, zPct: number): [number, number] {
+  return [(xPct - X_OFFSET) / X_SCALE, (zPct - Z_OFFSET) / Z_SCALE];
+}

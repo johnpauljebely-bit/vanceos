@@ -1,10 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Search, FileText, Gavel, Home, Map as MapIcon, StickyNote } from "lucide-react";
 import { WindowManagerProvider } from "@/components/floating-window/WindowManagerProvider";
 import { TopNavBar, type SelfDispatchState } from "./TopNavBar";
 import { SelfDispatchApprovalPopup } from "./SelfDispatchApprovalPopup";
+import { AudioGateOverlay } from "./AudioGateOverlay";
+import { playDispatchAlert } from "@/lib/dispatchAudio";
+import { useLiveQuery } from "@/lib/useLiveQuery";
 import { SecondaryToolbar } from "./SecondaryToolbar";
 import { CallIntakeForm } from "./CallIntakeForm";
 import { ActiveUnitsPanel } from "./ActiveUnitsPanel";
@@ -74,6 +77,28 @@ export function CadPanel({
   const [attachedCallId, setAttachedCallId] = useState(initialCall?.id ?? null);
   const [viewedCall, setViewedCall] = useState<ActiveCall | null>(initialCall);
   const canManage = selfDispatchState === "on" || viewedCall === null || viewedCall.id === attachedCallId;
+
+  // Auto-dispatch alert: watch our own live_units row for a call_id that
+  // just appeared (e.g. picked as the nearest unit for a traffic stop) and
+  // wasn't already the call we're viewing, then play the tone + speech.
+  const myCallsignKey = `${department}-${unitNumber}`;
+  const lastAlertedCallId = useRef<string | null>(initialCall?.id ?? null);
+  const { data: liveUnitsData } = useLiveQuery<{
+    liveUnits: Array<{ callsignKey: string; callId: string | null; postal: string | null }>;
+  }>("/api/live-units", 4000);
+
+  useEffect(() => {
+    const mine = liveUnitsData?.liveUnits.find((u) => u.callsignKey === myCallsignKey);
+    if (!mine) return;
+    if (mine.callId && mine.callId !== lastAlertedCallId.current) {
+      lastAlertedCallId.current = mine.callId;
+      playDispatchAlert(String(unitNumber), mine.postal ?? "unknown");
+      setStatus("enroute");
+      setAttachedCallId(mine.callId);
+    } else if (!mine.callId) {
+      lastAlertedCallId.current = null;
+    }
+  }, [liveUnitsData, myCallsignKey, unitNumber]);
 
   // While a request is pending, poll for the HR's response — approved flips
   // this unit into full dispatcher-level control, denied resets to off.
@@ -271,6 +296,7 @@ export function CadPanel({
       {notepadOpen && <NotepadWindow onClose={() => setNotepadOpen(false)} />}
 
       <SelfDispatchApprovalPopup />
+      <AudioGateOverlay />
 
       {selfDispatchError && (
         <div className="fixed bottom-6 right-6 z-[200] max-w-xs rounded-lg border border-accent-red bg-surface px-4 py-3 text-sm text-fg shadow-2xl">

@@ -7,24 +7,49 @@ import { Label } from "@/components/ui/Label";
 import { Button } from "@/components/ui/Button";
 import { cn } from "@/lib/cn";
 
+interface DispatchedUnit {
+  callsignKey: string;
+  department: string;
+  number: number;
+  postal: string | null;
+  distanceKnown: boolean;
+}
+
 export function TrafficStopWindow({ onClose }: { onClose: () => void }) {
   const [vehicleDescription, setVehicleDescription] = useState("");
   const [plate, setPlate] = useState("");
   const [postal, setPostal] = useState("");
   const [needsAdditional, setNeedsAdditional] = useState<boolean | null>(null);
+  const [additionalUnitsCount, setAdditionalUnitsCount] = useState(1);
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
+  const [dispatchedUnits, setDispatchedUnits] = useState<DispatchedUnit[]>([]);
 
-  const canSubmit = vehicleDescription.trim() && plate.trim() && postal.trim() && needsAdditional !== null;
+  const canSubmit =
+    vehicleDescription.trim() &&
+    plate.trim() &&
+    postal.trim() &&
+    needsAdditional !== null &&
+    (!needsAdditional || additionalUnitsCount >= 1);
 
   async function submit() {
     if (!canSubmit) return;
     setSending(true);
-    await fetch("/api/traffic-stop", {
+    const res = await fetch("/api/traffic-stop", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ vehicleDescription, plate, postal, needsAdditional }),
+      body: JSON.stringify({
+        vehicleDescription,
+        plate,
+        postal,
+        needsAdditional,
+        additionalUnitsCount: needsAdditional ? additionalUnitsCount : undefined,
+      }),
     });
+    if (res.ok) {
+      const data = await res.json();
+      setDispatchedUnits(data.dispatchedUnits ?? []);
+    }
     setSending(false);
     setSent(true);
   }
@@ -32,7 +57,26 @@ export function TrafficStopWindow({ onClose }: { onClose: () => void }) {
   return (
     <FloatingWindow title="Traffic Stop" onClose={onClose} width={480}>
       {sent ? (
-        <p className="text-sm text-accent-status-green">Traffic stop broadcast sent.</p>
+        <div className="flex flex-col gap-3">
+          <p className="text-sm text-accent-status-green">Traffic stop broadcast sent.</p>
+          {dispatchedUnits.length > 0 && (
+            <div className="rounded-lg border border-border-subtle p-3">
+              <div className="mb-2 text-xs font-bold text-fg-muted">Units Dispatched</div>
+              <div className="flex flex-col gap-1.5">
+                {dispatchedUnits.map((u) => (
+                  <div key={u.callsignKey} className="flex items-center justify-between text-sm">
+                    <span className="font-semibold text-fg">
+                      {u.department.toUpperCase()} {u.number}
+                    </span>
+                    <span className="text-fg-muted">
+                      {u.postal ? `coming from postal ${u.postal}` : "location unknown, en route"}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
       ) : (
         <div className="flex flex-col gap-4">
           <div>
@@ -75,6 +119,23 @@ export function TrafficStopWindow({ onClose }: { onClose: () => void }) {
               ))}
             </div>
           </div>
+          {needsAdditional && (
+            <div>
+              <Label required>How Many Units?</Label>
+              <Input
+                type="number"
+                min={1}
+                max={10}
+                value={additionalUnitsCount}
+                onChange={(e) => setAdditionalUnitsCount(Math.max(1, Math.min(10, Number(e.target.value) || 1)))}
+                className="mt-1 w-24"
+              />
+              <p className="mt-1 text-xs text-fg-muted">
+                We&apos;ll automatically send the closest available units — same department first, other law
+                enforcement if needed — and attach them to this stop.
+              </p>
+            </div>
+          )}
           <Button variant="boxed" accent="teal" onClick={submit} disabled={!canSubmit || sending} className="self-start">
             {sending ? "Broadcasting..." : "Broadcast Traffic Stop"}
           </Button>
