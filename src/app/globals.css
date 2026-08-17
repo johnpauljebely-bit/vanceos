@@ -23,6 +23,13 @@
   /* Panic only. Nothing else uses this. */
   --accent-red: #ef4444;
   --accent-red-fg: #2a0808;
+
+  /* UI revamp (2026-08-16): cobalt/royal blue is the new primary accent for
+     sign-in, team-select, and the dashboard as each gets rebuilt. Coexists
+     with --accent-teal (the old primary) until every surface is migrated —
+     don't remove teal until nothing references it anymore. */
+  --accent-blue: #3355ff;
+  --accent-blue-fg: #eef1ff;
 }
 
 @theme inline {
@@ -41,6 +48,8 @@
   --color-accent-status-green-fg: var(--accent-status-green-fg);
   --color-accent-red: var(--accent-red);
   --color-accent-red-fg: var(--accent-red-fg);
+  --color-accent-blue: var(--accent-blue);
+  --color-accent-blue-fg: var(--accent-blue-fg);
 
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);

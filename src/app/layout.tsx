@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "VanceOS",
-  description: "Computer Managed Dispatch (CMD) for Delta City Roleplay",
+  title: "Triton CAD",
+  description: "Computer-aided dispatch for Delta City Roleplay",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
