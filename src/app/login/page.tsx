@@ -43,9 +43,9 @@ export default async function LoginPage({
           priority
           className="object-cover opacity-70"
         />
-        {/* Left→right dark scrim: image stays legible on the left, text sits on solid dark on the right. */}
-        <div className="absolute inset-0 bg-gradient-to-r from-black/10 via-black/70 to-black" />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/30" />
+        {/* Left→right dark scrim: image stays legible on the left, text sits on solid dark on the right. -13% opacity across every stop per the user's ask. */}
+        <div className="absolute inset-0 bg-gradient-to-r from-black/0 via-black/57 to-black/87" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/47 via-transparent to-black/17" />
       </div>
 
       {/* This block itself stays positioned on the right side of the page

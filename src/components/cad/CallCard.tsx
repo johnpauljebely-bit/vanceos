@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { AlertCircle, MapPin, Pencil, Check } from "lucide-react";
+import { AlertCircle, Pencil, Check } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import { CallLocationThumbnail } from "./CallLocationThumbnail";
 import { accentIdFromVar } from "@/lib/departmentAccent";
-import { postalToCoords } from "@/lib/postalCoords";
 import { cn } from "@/lib/cn";
 
 export interface CompactCall {
@@ -49,7 +49,6 @@ export function CallCard({
 
   const accentId = accentIdFromVar(accentVar);
   const accent = accentId === "verify-green" ? "verify-green" : "blue";
-  const coords = postalToCoords(call.postal);
 
   return (
     <div key={tick} className="flex flex-col gap-2 rounded-xl border border-border-subtle bg-surface p-3">
@@ -65,25 +64,7 @@ export function CallCard({
 
       {call.description && <p className="line-clamp-2 text-xs text-fg-muted">{call.description}</p>}
 
-      <div className="relative h-20 overflow-hidden rounded-lg border border-border-subtle bg-black">
-        {coords ? (
-          <>
-            <div
-              className="absolute inset-0"
-              style={{
-                backgroundImage: "url(/erlcmap.webp)",
-                backgroundSize: "500% 500%",
-                backgroundPosition: `${coords[0]}% ${coords[1]}%`,
-              }}
-            />
-            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-              <MapPin size={20} className={accentId === "verify-green" ? "text-accent-verify-green" : "text-accent-blue"} fill="currentColor" />
-            </div>
-          </>
-        ) : (
-          <div className="flex h-full items-center justify-center text-[11px] text-fg-disabled">No location</div>
-        )}
-      </div>
+      <CallLocationThumbnail postal={call.postal} accentVar={accentVar} className="h-20" />
 
       <div className="flex gap-2">
         <Button variant="plain" accent="neutral" icon={<Pencil size={12} />} onClick={onEdit} className="text-xs">

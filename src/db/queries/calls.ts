@@ -1,4 +1,4 @@
-import { and, desc, eq, isNull, isNotNull } from "drizzle-orm";
+import { and, desc, eq, gt, isNull, isNotNull } from "drizzle-orm";
 import { nanoid } from "nanoid";
 import { db } from "@/db";
 import { calls, callNotes, callUnits, liveUnits } from "@/db/schema";
@@ -7,8 +7,17 @@ export async function listActiveCalls() {
   return db.select().from(calls).where(isNull(calls.clearedAt)).orderBy(desc(calls.createdAt));
 }
 
+const ARCHIVE_WINDOW_MS = 7 * 24 * 60 * 60 * 1000;
+
+/** Archived calls — cleared within the last 7 days, per the user's ask ("archives...up to 7 days ago"). */
 export async function listClosedCalls() {
-  return db.select().from(calls).where(isNotNull(calls.clearedAt)).orderBy(desc(calls.createdAt)).limit(50);
+  const cutoff = new Date(Date.now() - ARCHIVE_WINDOW_MS).toISOString();
+  return db
+    .select()
+    .from(calls)
+    .where(and(isNotNull(calls.clearedAt), gt(calls.clearedAt, cutoff)))
+    .orderBy(desc(calls.clearedAt))
+    .limit(100);
 }
 
 /** Melonly-style Calls board: every Active call plus recent Closed ones. */
@@ -117,8 +126,11 @@ export async function upsertLeoCall(input: CallIntakeInput) {
   return created;
 }
 
-export async function clearCall(callId: string) {
-  await db.update(calls).set({ clearedAt: new Date().toISOString(), status: "cleared" }).where(eq(calls.id, callId));
+export async function clearCall(callId: string, clearedBy?: string) {
+  await db
+    .update(calls)
+    .set({ clearedAt: new Date().toISOString(), status: "cleared", clearedBy })
+    .where(eq(calls.id, callId));
 }
 
 export async function assignUnitToCall(callId: string, discordId: string) {

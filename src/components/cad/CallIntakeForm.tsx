@@ -7,6 +7,7 @@ import { Select } from "@/components/ui/Select";
 import { Textarea } from "@/components/ui/Textarea";
 import { Label } from "@/components/ui/Label";
 import { Button } from "@/components/ui/Button";
+import { CallLocationThumbnail } from "./CallLocationThumbnail";
 import { accentIdFromVar, accentTextClassFromVar } from "@/lib/departmentAccent";
 import { cn } from "@/lib/cn";
 
@@ -273,7 +274,10 @@ export function CallIntakeForm({
 
           <div>
             <Label>Postal</Label>
-            <Input value={postal} onChange={(e) => setPostal(e.target.value)} className="mt-1" />
+            <div className="mt-1 flex items-center gap-2">
+              <Input value={postal} onChange={(e) => setPostal(e.target.value)} className="flex-1" />
+              <CallLocationThumbnail postal={postal || null} accentVar={accentVar} className="h-9 w-9 shrink-0" />
+            </div>
           </div>
 
           <div>
