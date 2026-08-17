@@ -74,7 +74,22 @@ export function ManageCharactersWindow({
   }
 
   return (
-    <FloatingWindow title="Manage Characters" onClose={onClose} width={720} accentVar="--accent-light-red">
+    <FloatingWindow
+      title="Manage Characters"
+      onClose={onClose}
+      width={720}
+      accentVar="--accent-light-red"
+      footer={
+        <div className="flex items-center justify-between">
+          <Button variant="plain" accent="neutral" onClick={onClose}>
+            Close
+          </Button>
+          <Button variant="boxed" accent="light-red" icon={<Plus size={14} />} onClick={() => setShowForm((v) => !v)}>
+            Add Character
+          </Button>
+        </div>
+      }
+    >
       <div className="flex flex-col gap-4">
         <div className="text-center">
           <h2 className="text-xl font-bold text-fg">Manage Characters</h2>
@@ -103,7 +118,7 @@ export function ManageCharactersWindow({
               />
             </div>
             {formError && <p className="text-xs text-accent-red sm:col-span-3">{formError}</p>}
-            <Button type="submit" variant="boxed" accent="blue" disabled={saving} className="self-start sm:col-span-3">
+            <Button type="submit" variant="boxed" accent="light-red" disabled={saving} className="self-start sm:col-span-3">
               {saving ? "Saving..." : "Save"}
             </Button>
           </form>
@@ -112,9 +127,9 @@ export function ManageCharactersWindow({
         <DataTable columns={["", "First Name", "Last Name", "DoB"]} isEmpty={!characters || characters.length === 0}>
           {characters?.map((c) => (
             <DataRow key={c.id}>
-              <DataCell>{c.id === currentCharacterId && <Check size={14} className="text-accent-blue" />}</DataCell>
+              <DataCell>{c.id === currentCharacterId && <Check size={14} className="text-accent-light-red" />}</DataCell>
               <DataCell>
-                <button type="button" onClick={() => onSelect(c.id)} className="text-fg hover:text-accent-blue">
+                <button type="button" onClick={() => onSelect(c.id)} className="text-fg hover:text-accent-light-red">
                   {c.firstName}
                 </button>
               </DataCell>
@@ -123,15 +138,6 @@ export function ManageCharactersWindow({
             </DataRow>
           ))}
         </DataTable>
-
-        <div className="flex items-center justify-between border-t border-border-subtle pt-4">
-          <Button variant="plain" accent="neutral" onClick={onClose}>
-            Close
-          </Button>
-          <Button variant="boxed" accent="blue" icon={<Plus size={14} />} onClick={() => setShowForm((v) => !v)}>
-            Add Character
-          </Button>
-        </div>
       </div>
     </FloatingWindow>
   );

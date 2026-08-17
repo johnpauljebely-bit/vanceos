@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/Textarea";
 import { Label } from "@/components/ui/Label";
 import { DataTable, DataRow, DataCell } from "@/components/ui/DataTable";
 import { useLiveQuery } from "@/lib/useLiveQuery";
+import { accentIdFromVar, accentBorderTextClassFromVar } from "@/lib/departmentAccent";
 import { cn } from "@/lib/cn";
 
 interface RecordRow {
@@ -27,7 +28,13 @@ const RECORD_TYPES = [
   { value: "other", label: "Other" },
 ];
 
-export function RecordsWindow({ onClose }: { onClose: () => void }) {
+export function RecordsWindow({
+  onClose,
+  accentVar,
+}: {
+  onClose: () => void;
+  accentVar?: string;
+}) {
   const [tab, setTab] = useState<"all" | "mine">("all");
   const { data, mutate } = useLiveQuery<{ records: RecordRow[] }>(`/api/records?mine=${tab === "mine" ? 1 : 0}`);
 
@@ -37,6 +44,8 @@ export function RecordsWindow({ onClose }: { onClose: () => void }) {
   const [subjectName, setSubjectName] = useState("");
   const [content, setContent] = useState("");
   const [saving, setSaving] = useState(false);
+  const accentId = accentIdFromVar(accentVar);
+  const activeTabClass = accentBorderTextClassFromVar(accentVar);
 
   async function create(status: "draft" | "final") {
     if (!title.trim() || !content.trim()) return;
@@ -55,7 +64,7 @@ export function RecordsWindow({ onClose }: { onClose: () => void }) {
   }
 
   return (
-    <FloatingWindow title="Records" onClose={onClose} width={700}>
+    <FloatingWindow title="Records" onClose={onClose} width={700} accentVar={accentVar}>
       <div className="flex flex-col gap-4">
         <div className="flex items-center justify-between border-b border-border-subtle pb-3">
           <div className="flex gap-2">
@@ -66,14 +75,14 @@ export function RecordsWindow({ onClose }: { onClose: () => void }) {
                 onClick={() => setTab(t)}
                 className={cn(
                   "rounded-lg border px-3 py-1.5 text-xs font-medium",
-                  tab === t ? "border-accent-blue text-accent-blue" : "border-transparent text-fg-muted hover:text-fg",
+                  tab === t ? activeTabClass : "border-transparent text-fg-muted hover:text-fg",
                 )}
               >
                 {t === "all" ? "All Records" : "My Files"}
               </button>
             ))}
           </div>
-          <Button variant="boxed" accent="blue" onClick={() => setShowForm((v) => !v)} className="px-3 py-1 text-xs">
+          <Button variant="boxed" accent={accentId} onClick={() => setShowForm((v) => !v)} className="px-3 py-1 text-xs">
             {showForm ? "Cancel" : "New Record"}
           </Button>
         </div>
@@ -105,7 +114,7 @@ export function RecordsWindow({ onClose }: { onClose: () => void }) {
               <Textarea value={content} onChange={(e) => setContent(e.target.value)} className="mt-1 min-h-32" />
             </div>
             <div className="flex gap-3">
-              <Button variant="boxed" accent="blue" onClick={() => create("final")} disabled={saving} className="self-start">
+              <Button variant="boxed" accent={accentId} onClick={() => create("final")} disabled={saving} className="self-start">
                 {saving ? "Saving..." : "Create Record"}
               </Button>
               <Button variant="plain" accent="neutral" onClick={() => create("draft")} disabled={saving}>

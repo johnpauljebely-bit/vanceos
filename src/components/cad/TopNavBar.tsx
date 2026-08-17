@@ -11,6 +11,7 @@ import { PanicDropdown } from "./PanicDropdown";
 import { QuickActionsMenu } from "./QuickActionsMenu";
 import { QuickActionSearchBar, type QuickAction } from "./QuickActionSearchBar";
 import type { UnitStatus } from "@/lib/unitStatus";
+import { accentIdForDepartment, accentTextClassForDepartment } from "@/lib/departmentAccent";
 import { cn } from "@/lib/cn";
 
 export type SelfDispatchState = "off" | "waiting" | "on";
@@ -45,6 +46,8 @@ export function TopNavBar({
   const mapHref = `/leo/${department}/cad/map`;
   const isHome = pathname === cadHref;
   const isMap = pathname === mapHref;
+  const accentClass = accentTextClassForDepartment(department);
+  const accentId = accentIdForDepartment(department);
 
   return (
     <div className="flex items-center gap-4 border-b border-border-subtle bg-surface px-4 py-3">
@@ -55,10 +58,7 @@ export function TopNavBar({
       <nav className="flex items-center gap-4">
         <Link
           href={cadHref}
-          className={cn(
-            "text-sm font-bold",
-            isHome ? "text-accent-blue" : "text-fg-muted hover:text-fg",
-          )}
+          className={cn("text-sm font-bold", isHome ? accentClass : "text-fg-muted hover:text-fg")}
         >
           Home
         </Link>
@@ -66,14 +66,14 @@ export function TopNavBar({
           href={mapHref}
           className={cn(
             "inline-flex items-center gap-1.5 text-sm font-medium",
-            isMap ? "text-accent-blue" : "text-fg-muted hover:text-fg",
+            isMap ? accentClass : "text-fg-muted hover:text-fg",
           )}
         >
           <Map size={14} /> Map
         </Link>
         <Button
           variant="plain"
-          accent={selfDispatchState === "on" ? "blue" : "neutral"}
+          accent={selfDispatchState === "on" ? accentId : "neutral"}
           active={selfDispatchState === "on"}
           onClick={onRequestSelfDispatch}
           disabled={selfDispatchState === "waiting"}

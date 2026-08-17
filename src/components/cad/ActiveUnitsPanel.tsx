@@ -7,6 +7,7 @@ import { DataTable, DataRow, DataCell } from "@/components/ui/DataTable";
 import { Input } from "@/components/ui/Input";
 import { useLiveQuery } from "@/lib/useLiveQuery";
 import { UNIT_STATUS_COLOR, type UnitStatus } from "@/lib/unitStatus";
+import { accentTextClassFromVar } from "@/lib/departmentAccent";
 
 interface LiveUnit {
   callsignKey: string;
@@ -23,10 +24,11 @@ interface LiveUnit {
   subdivision: string | null;
 }
 
-export function ActiveUnitsPanel() {
+export function ActiveUnitsPanel({ accentVar }: { accentVar?: string } = {}) {
   const { data } = useLiveQuery<{ liveUnits: LiveUnit[] }>("/api/live-units");
   const [query, setQuery] = useState("");
   const [view, setView] = useState<"list" | "grid">("list");
+  const accentClass = accentTextClassFromVar(accentVar);
 
   const units = useMemo(() => {
     const all = (data?.liveUnits ?? []).filter((u) => u.onDuty);
@@ -47,7 +49,7 @@ export function ActiveUnitsPanel() {
         <button
           type="button"
           onClick={() => setView("list")}
-          className={view === "list" ? "text-accent-blue" : "text-fg-muted hover:text-fg"}
+          className={view === "list" ? accentClass : "text-fg-muted hover:text-fg"}
           aria-label="List view"
         >
           <Columns3 size={14} />
@@ -55,7 +57,7 @@ export function ActiveUnitsPanel() {
         <button
           type="button"
           onClick={() => setView("grid")}
-          className={view === "grid" ? "text-accent-blue" : "text-fg-muted hover:text-fg"}
+          className={view === "grid" ? accentClass : "text-fg-muted hover:text-fg"}
           aria-label="Grid view"
         >
           <LayoutGrid size={14} />

@@ -3,9 +3,10 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { LogOut } from "lucide-react";
+import { LogOut, X } from "lucide-react";
 import { signOut } from "next-auth/react";
 import { TeamTile, type TeamTileData } from "./TeamTile";
+import { DeltaPdUnitSelectCard } from "@/components/leo/DeltaPdUnitSelectCard";
 import { cn } from "@/lib/cn";
 
 export function TeamSelectScreen({
@@ -25,6 +26,7 @@ export function TeamSelectScreen({
 }) {
   const [hovered, setHovered] = useState<string | null>(null);
   const [whitelistedOpen, setWhitelistedOpen] = useState(false);
+  const [policeOpen, setPoliceOpen] = useState(false);
 
   const whitelistedAccess = rcmpAccess || bchpAccess;
 
@@ -53,7 +55,6 @@ export function TeamSelectScreen({
       subtitle: "Law Enforcement",
       image: "/brand/team-police.png",
       enabled: deltaPdAccess,
-      href: "/leo/delta-pd/unit-select",
       accentVar: "--accent-blue",
     },
     {
@@ -97,7 +98,13 @@ export function TeamSelectScreen({
               hovered={hovered === tile.key}
               onHoverStart={() => setHovered(tile.key)}
               onHoverEnd={() => setHovered(null)}
-              onClick={tile.key === "whitelisted" ? () => setWhitelistedOpen(true) : undefined}
+              onClick={
+                tile.key === "whitelisted"
+                  ? () => setWhitelistedOpen(true)
+                  : tile.key === "police"
+                    ? () => setPoliceOpen(true)
+                    : undefined
+              }
             />
           ))}
         </div>
@@ -133,6 +140,22 @@ export function TeamSelectScreen({
             >
               Cancel
             </button>
+          </div>
+        </div>
+      )}
+
+      {policeOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-6" onClick={() => setPoliceOpen(false)}>
+          <div className="relative w-full max-w-lg" onClick={(e) => e.stopPropagation()}>
+            <button
+              type="button"
+              onClick={() => setPoliceOpen(false)}
+              aria-label="Close"
+              className="absolute -top-3 -right-3 flex h-8 w-8 items-center justify-center rounded-full border border-white/10 bg-bg text-white/60 hover:text-white"
+            >
+              <X size={14} />
+            </button>
+            <DeltaPdUnitSelectCard />
           </div>
         </div>
       )}

@@ -6,6 +6,8 @@ import { Check, LogOut, Plus } from "lucide-react";
 import { FloatingWindow } from "@/components/floating-window/FloatingWindow";
 import { Button } from "@/components/ui/Button";
 import { DataTable, DataRow, DataCell } from "@/components/ui/DataTable";
+import { accentIdFromVar, accentTextClassFromVar } from "@/lib/departmentAccent";
+import { cn } from "@/lib/cn";
 
 interface UnitRow {
   department: string;
@@ -22,13 +24,18 @@ export function UnitManagerWindow({
   currentDepartment,
   currentNumber,
   onClose,
+  accentVar,
 }: {
   currentDepartment: string;
   currentNumber: number;
   onClose: () => void;
+  accentVar?: string;
 }) {
   const [units, setUnits] = useState<UnitRow[] | null>(null);
   const router = useRouter();
+  const accentId = accentIdFromVar(accentVar);
+  const accentClass = accentTextClassFromVar(accentVar);
+  const accentHoverClass = accentId === "verify-green" ? "hover:text-accent-verify-green" : "hover:text-accent-blue";
 
   useEffect(() => {
     fetch("/api/leo/units")
@@ -63,7 +70,7 @@ export function UnitManagerWindow({
   }
 
   return (
-    <FloatingWindow title="Unit Manager" onClose={onClose} width={720}>
+    <FloatingWindow title="Unit Manager" onClose={onClose} width={720} accentVar={accentVar}>
       <div className="flex flex-col gap-4">
         <div className="text-center">
           <h2 className="text-xl font-bold text-fg">Manage Units</h2>
@@ -78,9 +85,9 @@ export function UnitManagerWindow({
             const isCurrent = u.department === currentDepartment && u.number === currentNumber;
             return (
               <DataRow key={`${u.department}-${u.number}`}>
-                <DataCell>{isCurrent && <Check size={14} className="text-accent-blue" />}</DataCell>
+                <DataCell>{isCurrent && <Check size={14} className={accentClass} />}</DataCell>
                 <DataCell>
-                  <button type="button" onClick={() => switchTo(u)} className="text-fg hover:text-accent-blue">
+                  <button type="button" onClick={() => switchTo(u)} className={cn("text-fg", accentHoverClass)}>
                     {u.number}
                   </button>
                 </DataCell>
@@ -103,7 +110,7 @@ export function UnitManagerWindow({
           </Button>
           <Button
             variant="boxed"
-            accent="blue"
+            accent={accentId}
             icon={<Plus size={14} />}
             onClick={() => router.push(`/leo/${currentDepartment}/unit-select`)}
           >

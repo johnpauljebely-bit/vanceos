@@ -68,7 +68,25 @@ export function CivilianCharacterEditWindow({
   }
 
   return (
-    <FloatingWindow title={`Civilian Character #${String(character.id).padStart(6, "0")}`} onClose={onClose} width={860} accentVar="--accent-light-red">
+    <FloatingWindow
+      title={`Civilian Character #${String(character.id).padStart(6, "0")}`}
+      onClose={onClose}
+      width={860}
+      accentVar="--accent-light-red"
+      footer={
+        <div className="flex gap-3">
+          <Button variant="boxed" accent="status-green" icon={<Save size={14} />} onClick={save} disabled={saving}>
+            {saving ? "Saving..." : "Save"}
+          </Button>
+          <Button variant="boxed" accent="red" icon={<Ban size={14} />} onClick={onClose}>
+            Cancel
+          </Button>
+          <Button variant="plain" accent="neutral" icon={<X size={14} />} onClick={onClose}>
+            Close
+          </Button>
+        </div>
+      }
+    >
       <div className="flex flex-col gap-6">
         <section className="rounded-xl border border-border-subtle p-4 text-center">
           <h3 className="mb-4 text-left text-lg font-bold text-fg">Identity</h3>
@@ -178,18 +196,6 @@ export function CivilianCharacterEditWindow({
             </div>
           </div>
         </section>
-
-        <div className="flex gap-3">
-          <Button variant="boxed" accent="status-green" icon={<Save size={14} />} onClick={save} disabled={saving}>
-            {saving ? "Saving..." : "Save"}
-          </Button>
-          <Button variant="boxed" accent="red" icon={<Ban size={14} />} onClick={onClose}>
-            Cancel
-          </Button>
-          <Button variant="plain" accent="neutral" icon={<X size={14} />} onClick={onClose}>
-            Close
-          </Button>
-        </div>
       </div>
     </FloatingWindow>
   );

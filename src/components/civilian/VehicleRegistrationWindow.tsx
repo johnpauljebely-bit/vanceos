@@ -46,12 +46,32 @@ export function VehicleRegistrationWindow({
   }
 
   return (
-    <FloatingWindow title="New: Vehicle Registration" onClose={onClose} width={780} accentVar="--accent-light-red">
+    <FloatingWindow
+      title="New: Vehicle Registration"
+      onClose={onClose}
+      width={780}
+      accentVar="--accent-light-red"
+      footer={
+        <div className="flex flex-col gap-3">
+          {error && <p className="text-sm text-accent-red">{error}</p>}
+          <div className="flex gap-3">
+            <Button variant="boxed" accent="light-red" icon={<FilePlus size={14} />} onClick={create} disabled={saving}>
+              {saving ? "Creating..." : "Create"}
+            </Button>
+            <Button variant="plain" accent="neutral" icon={<X size={14} />} onClick={onClose}>
+              Close
+            </Button>
+          </div>
+        </div>
+      }
+    >
       <div className="flex flex-col gap-6">
         <section className="rounded-xl border border-border-subtle p-4">
           <div className="mb-3 flex items-center gap-3">
             <h3 className="text-lg font-bold text-fg">Owner Information</h3>
-            <span className="rounded-lg border border-accent-blue px-2 py-1 text-xs text-accent-blue">Civilian</span>
+            <span className="rounded-lg border border-accent-light-red px-2 py-1 text-xs text-accent-light-red">
+              Civilian
+            </span>
           </div>
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
             <ReadOnly label="First Name" value={character.firstName} />
@@ -98,17 +118,6 @@ export function VehicleRegistrationWindow({
             </div>
           </div>
         </section>
-
-        {error && <p className="text-sm text-accent-red">{error}</p>}
-
-        <div className="flex gap-3">
-          <Button variant="boxed" accent="blue" icon={<FilePlus size={14} />} onClick={create} disabled={saving}>
-            {saving ? "Creating..." : "Create"}
-          </Button>
-          <Button variant="plain" accent="neutral" icon={<X size={14} />} onClick={onClose}>
-            Close
-          </Button>
-        </div>
       </div>
     </FloatingWindow>
   );

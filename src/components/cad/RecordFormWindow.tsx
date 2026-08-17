@@ -6,6 +6,7 @@ import { FloatingWindow } from "@/components/floating-window/FloatingWindow";
 import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/Label";
 import { Button } from "@/components/ui/Button";
+import { accentIdFromVar } from "@/lib/departmentAccent";
 
 export type RecordType = "vehicle_citation" | "general_citation" | "arrest_report" | "accident_report";
 
@@ -44,6 +45,7 @@ export function RecordFormWindow({
   onClose,
   onOpenLookup,
   onSaved,
+  accentVar,
 }: {
   recordType: RecordType;
   unitHeader: UnitHeader;
@@ -51,6 +53,7 @@ export function RecordFormWindow({
   onClose: () => void;
   onOpenLookup: (tab: "name" | "vehicle" | "licence") => void;
   onSaved: () => void;
+  accentVar?: string;
 }) {
   const initial = draft?.details ?? {};
   const [fields, setFields] = useState<Record<string, string>>(initial);
@@ -58,6 +61,7 @@ export function RecordFormWindow({
   const [submitted, setSubmitted] = useState(false);
 
   const hasVehicle = HAS_VEHICLE_SECTION[recordType];
+  const accentId = accentIdFromVar(accentVar);
 
   function set(key: string, value: string) {
     setFields((prev) => ({ ...prev, [key]: value }));
@@ -108,7 +112,12 @@ export function RecordFormWindow({
   }
 
   return (
-    <FloatingWindow title={`New: ${RECORD_TYPE_LABEL[recordType]}`} onClose={closeAndMaybeSaveDraft} width={780}>
+    <FloatingWindow
+      title={`New: ${RECORD_TYPE_LABEL[recordType]}`}
+      onClose={closeAndMaybeSaveDraft}
+      width={780}
+      accentVar={accentVar}
+    >
       <div className="flex flex-col gap-6">
         <section className="rounded-xl border border-border-subtle p-4">
           <h3 className="mb-3 text-lg font-bold text-fg">Report Header</h3>
@@ -127,10 +136,10 @@ export function RecordFormWindow({
         <section className="rounded-xl border border-border-subtle p-4">
           <div className="mb-3 flex items-center gap-3">
             <h3 className="text-lg font-bold text-fg">Driver</h3>
-            <Button variant="boxed" accent="blue" className="px-3 py-1 text-xs" icon={<Search size={12} />} onClick={() => onOpenLookup("name")}>
+            <Button variant="boxed" accent={accentId} className="px-3 py-1 text-xs" icon={<Search size={12} />} onClick={() => onOpenLookup("name")}>
               Civilian
             </Button>
-            <Button variant="boxed" accent="blue" className="px-3 py-1 text-xs" icon={<Search size={12} />} onClick={() => onOpenLookup("licence")}>
+            <Button variant="boxed" accent={accentId} className="px-3 py-1 text-xs" icon={<Search size={12} />} onClick={() => onOpenLookup("licence")}>
               Licence
             </Button>
           </div>
@@ -168,7 +177,7 @@ export function RecordFormWindow({
           <section className="rounded-xl border border-border-subtle p-4">
             <div className="mb-3 flex items-center gap-3">
               <h3 className="text-lg font-bold text-fg">Vehicle</h3>
-              <Button variant="boxed" accent="blue" className="px-3 py-1 text-xs" icon={<Search size={12} />} onClick={() => onOpenLookup("vehicle")}>
+              <Button variant="boxed" accent={accentId} className="px-3 py-1 text-xs" icon={<Search size={12} />} onClick={() => onOpenLookup("vehicle")}>
                 Vehicle
               </Button>
             </div>
@@ -204,7 +213,7 @@ export function RecordFormWindow({
         )}
 
         <div className="flex gap-3">
-          <Button variant="boxed" accent="blue" icon={<FilePlus size={14} />} onClick={create} disabled={saving}>
+          <Button variant="boxed" accent={accentId} icon={<FilePlus size={14} />} onClick={create} disabled={saving}>
             {saving ? "Creating..." : "Create"}
           </Button>
           <Button variant="plain" accent="neutral" icon={<X size={14} />} onClick={closeAndMaybeSaveDraft}>

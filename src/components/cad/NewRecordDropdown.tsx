@@ -21,10 +21,14 @@ export function NewRecordDropdown({
   onCreateNew,
   onOpenDraft,
   onOpenWarrantsBolos,
+  accent = "blue",
+  accentClass = "text-accent-blue",
 }: {
   onCreateNew: (type: RecordType) => void;
   onOpenDraft: (draft: DraftSummary) => void;
   onOpenWarrantsBolos: (tab: "warrants" | "bolos") => void;
+  accent?: "blue" | "verify-green";
+  accentClass?: string;
 }) {
   const [open, setOpen] = useState(false);
   const [drafts, setDrafts] = useState<DraftSummary[]>([]);
@@ -45,7 +49,7 @@ export function NewRecordDropdown({
     <div className="relative">
       <Button
         variant="plain"
-        accent="blue"
+        accent={accent}
         icon={<FilePlus size={14} />}
         onClick={() => setOpen((v) => !v)}
       >
@@ -69,7 +73,7 @@ export function NewRecordDropdown({
                     className="flex w-full flex-col items-start px-3 py-2 text-left hover:bg-white/5"
                   >
                     <span className="flex items-center gap-2 text-sm text-fg">
-                      <FileText size={14} className="text-accent-blue" />
+                      <FileText size={14} className={accentClass} />
                       {RECORD_TYPE_LABEL[d.recordType]}
                     </span>
                     <span className="text-xs text-fg-muted">

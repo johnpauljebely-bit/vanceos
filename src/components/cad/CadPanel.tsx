@@ -22,6 +22,7 @@ import { TrafficStopWindow } from "./TrafficStopWindow";
 import { NotepadWindow } from "./NotepadWindow";
 import type { QuickAction } from "./QuickActionSearchBar";
 import type { UnitStatus } from "@/lib/unitStatus";
+import { accentVarForDepartment, accentTextClassForDepartment } from "@/lib/departmentAccent";
 
 interface ActiveCall {
   id: string;
@@ -182,13 +183,16 @@ export function CadPanel({
       });
   }
 
+  const accentVar = accentVarForDepartment(department);
+  const accentClass = accentTextClassForDepartment(department);
+
   const quickActions: QuickAction[] = [
-    { id: "lookup", label: "Lookup", icon: <Search size={14} className="text-accent-blue" />, end: "Window" },
-    { id: "records", label: "Records", icon: <FileText size={14} className="text-accent-blue" />, end: "Window" },
-    { id: "warrants", label: "Warrants & BOLOs", icon: <Gavel size={14} className="text-accent-blue" />, end: "Window" },
-    { id: "notepad", label: "Notepad", icon: <StickyNote size={14} className="text-accent-blue" />, end: "Window" },
-    { id: "home", label: "Home", icon: <Home size={14} className="text-accent-blue" />, end: "Nav" },
-    { id: "map", label: "Map", icon: <MapIcon size={14} className="text-accent-blue" />, end: "Nav" },
+    { id: "lookup", label: "Lookup", icon: <Search size={14} className={accentClass} />, end: "Window" },
+    { id: "records", label: "Records", icon: <FileText size={14} className={accentClass} />, end: "Window" },
+    { id: "warrants", label: "Warrants & BOLOs", icon: <Gavel size={14} className={accentClass} />, end: "Window" },
+    { id: "notepad", label: "Notepad", icon: <StickyNote size={14} className={accentClass} />, end: "Window" },
+    { id: "home", label: "Home", icon: <Home size={14} className={accentClass} />, end: "Nav" },
+    { id: "map", label: "Map", icon: <MapIcon size={14} className={accentClass} />, end: "Nav" },
   ];
 
   function handleQuickAction(action: QuickAction) {
@@ -255,20 +259,24 @@ export function CadPanel({
               setViewedCall(null);
             }}
             onCloseView={() => setViewedCall(null)}
+            accentVar={accentVar}
           />
           <div className="flex flex-col overflow-y-auto">
-            <ActiveUnitsPanel />
+            <ActiveUnitsPanel accentVar={accentVar} />
             <ActiveSquadsPanel />
           </div>
         </div>
       </div>
 
-      {lookupOpen && <LookupWindow initialTab={lookupTab} onClose={() => setLookupOpen(false)} />}
+      {lookupOpen && (
+        <LookupWindow initialTab={lookupTab} onClose={() => setLookupOpen(false)} accentVar={accentVar} />
+      )}
       {callsBoardOpen && (
         <CallsBoardWindow
           onOpenCall={openCallFromBoard}
           onClose={() => setCallsBoardOpen(false)}
           onJoined={() => setStatus("enroute")}
+          accentVar={accentVar}
         />
       )}
       {warrantsBolosOpen && (
@@ -276,9 +284,10 @@ export function CadPanel({
           initialTab={warrantsBolosTab}
           autoShowForm={warrantsBolosAutoForm}
           onClose={() => setWarrantsBolosOpen(false)}
+          accentVar={accentVar}
         />
       )}
-      {recordsOpen && <RecordsWindow onClose={() => setRecordsOpen(false)} />}
+      {recordsOpen && <RecordsWindow onClose={() => setRecordsOpen(false)} accentVar={accentVar} />}
       {recordForm && (
         <RecordFormWindow
           recordType={recordForm.type}
@@ -295,6 +304,7 @@ export function CadPanel({
           }}
           onSaved={() => {}}
           onClose={() => setRecordForm(null)}
+          accentVar={accentVar}
         />
       )}
       {unitManagerOpen && (
@@ -302,10 +312,11 @@ export function CadPanel({
           currentDepartment={department}
           currentNumber={unitNumber}
           onClose={() => setUnitManagerOpen(false)}
+          accentVar={accentVar}
         />
       )}
-      {trafficStopOpen && <TrafficStopWindow onClose={() => setTrafficStopOpen(false)} />}
-      {notepadOpen && <NotepadWindow onClose={() => setNotepadOpen(false)} />}
+      {trafficStopOpen && <TrafficStopWindow onClose={() => setTrafficStopOpen(false)} accentVar={accentVar} />}
+      {notepadOpen && <NotepadWindow onClose={() => setNotepadOpen(false)} accentVar={accentVar} />}
 
       <SelfDispatchApprovalPopup />
       <AudioGateOverlay />

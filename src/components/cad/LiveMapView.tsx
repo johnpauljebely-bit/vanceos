@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { User, Phone, Plus, Minus, Home, AlertCircle, ArrowLeft } from "lucide-react";
 import { useLiveQuery } from "@/lib/useLiveQuery";
 import { UNIT_STATUS_COLOR, UNIT_STATUS_LABEL, type UnitStatus } from "@/lib/unitStatus";
+import { accentHoverTextClassFromVar, accentToggleActiveClassFromVar } from "@/lib/departmentAccent";
 import { cn } from "@/lib/cn";
 
 interface MapUnit {
@@ -38,12 +39,14 @@ function jitter(index: number): [number, number] {
   return [Math.cos(angle) * radius, Math.sin(angle) * radius];
 }
 
-export function LiveMapView() {
+export function LiveMapView({ accentVar }: { accentVar?: string } = {}) {
   const pathname = usePathname();
   // Path is always /leo/{department}/cad/map — derive the CAD link from it
   // rather than threading department down as a prop.
   const department = pathname.split("/")[2] ?? "";
   const cadHref = `/leo/${department}/cad`;
+  const accentHoverClass = accentHoverTextClassFromVar(accentVar);
+  const accentToggleActiveClass = accentToggleActiveClassFromVar(accentVar);
   const { data } = useLiveQuery<{ units: MapUnit[]; calls: MapCall[] }>("/api/leo/map-data", 4000);
   const [showUnits, setShowUnits] = useState(true);
   const [showCalls, setShowCalls] = useState(true);
@@ -99,7 +102,7 @@ export function LiveMapView() {
         <div className="flex items-center gap-4">
           <Link
             href={cadHref}
-            className="inline-flex items-center gap-1.5 text-sm font-medium text-fg-muted hover:text-accent-blue"
+            className={cn("inline-flex items-center gap-1.5 text-sm font-medium text-fg-muted", accentHoverClass)}
           >
             <ArrowLeft size={14} /> Back to CAD
           </Link>
@@ -119,7 +122,7 @@ export function LiveMapView() {
           title="Show/hide units"
           className={cn(
             "flex h-9 w-9 items-center justify-center rounded-lg border",
-            showUnits ? "border-accent-blue bg-accent-blue/10 text-accent-blue" : "border-border-subtle text-fg-muted",
+            showUnits ? accentToggleActiveClass : "border-border-subtle text-fg-muted",
           )}
         >
           <User size={16} />
@@ -131,7 +134,7 @@ export function LiveMapView() {
           title="Show/hide calls"
           className={cn(
             "flex h-9 w-9 items-center justify-center rounded-lg border",
-            showCalls ? "border-accent-blue bg-accent-blue/10 text-accent-blue" : "border-border-subtle text-fg-muted",
+            showCalls ? accentToggleActiveClass : "border-border-subtle text-fg-muted",
           )}
         >
           <Phone size={16} />

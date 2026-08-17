@@ -6,7 +6,7 @@ import { Textarea } from "@/components/ui/Textarea";
 
 const STORAGE_KEY = "dc-cad-notepad";
 
-export function NotepadWindow({ onClose }: { onClose: () => void }) {
+export function NotepadWindow({ onClose, accentVar }: { onClose: () => void; accentVar?: string }) {
   const [text, setText] = useState(() =>
     typeof window === "undefined" ? "" : (localStorage.getItem(STORAGE_KEY) ?? ""),
   );
@@ -17,7 +17,7 @@ export function NotepadWindow({ onClose }: { onClose: () => void }) {
   }
 
   return (
-    <FloatingWindow title="Notepad" onClose={onClose} width={420}>
+    <FloatingWindow title="Notepad" onClose={onClose} width={420} accentVar={accentVar}>
       <Textarea
         value={text}
         onChange={(e) => onChange(e.target.value)}

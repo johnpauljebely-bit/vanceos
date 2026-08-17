@@ -241,7 +241,7 @@ export function UnitSelectCard({ department, callsigns }: { department: string; 
 
       <Button
         variant="boxed"
-        accent="blue"
+        accent={accent}
         disabled={!selected || !canEnter || entering}
         onClick={enterCad}
         className="justify-center py-3 text-base"

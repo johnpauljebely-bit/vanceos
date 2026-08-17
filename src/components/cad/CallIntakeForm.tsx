@@ -7,6 +7,8 @@ import { Select } from "@/components/ui/Select";
 import { Textarea } from "@/components/ui/Textarea";
 import { Label } from "@/components/ui/Label";
 import { Button } from "@/components/ui/Button";
+import { accentIdFromVar, accentTextClassFromVar } from "@/lib/departmentAccent";
+import { cn } from "@/lib/cn";
 
 interface CallNote {
   id: number;
@@ -32,13 +34,18 @@ export function CallIntakeForm({
   onJoined,
   onSelfCleared,
   onCloseView,
+  accentVar,
 }: {
   initialCall: ActiveCall | null;
   canManage: boolean;
   onJoined?: () => void;
   onSelfCleared?: () => void;
   onCloseView?: () => void;
+  accentVar?: string;
 }) {
+  const accentId = accentIdFromVar(accentVar);
+  const accentClass = accentTextClassFromVar(accentVar);
+  const accentHoverClass = accentId === "verify-green" ? "hover:text-accent-verify-green" : "hover:text-accent-blue";
   const [call, setCall] = useState<ActiveCall | null>(initialCall);
   const [notes, setNotes] = useState<CallNote[]>([]);
   const [noteText, setNoteText] = useState("");
@@ -144,7 +151,7 @@ export function CallIntakeForm({
         <h2 className="text-lg font-bold text-fg">{call?.title || "No Active Call"}</h2>
         <div className="flex items-center gap-3">
           {call && !canManage && (
-            <Button variant="plain" accent="blue" onClick={joinCall} disabled={joining} icon={<LogIn size={14} />}>
+            <Button variant="plain" accent={accentId} onClick={joinCall} disabled={joining} icon={<LogIn size={14} />}>
               {joining ? "Joining..." : "Join"}
             </Button>
           )}
@@ -153,7 +160,7 @@ export function CallIntakeForm({
           </Button>
           <Button
             variant="plain"
-            accent="blue"
+            accent={accentId}
             icon={<Settings size={14} />}
             disabled={!call || broadcasting}
             onClick={broadcastUpdate}
@@ -273,10 +280,10 @@ export function CallIntakeForm({
             <Label>Address</Label>
             <div className="mt-1 flex items-center gap-2">
               <Input value={address} onChange={(e) => setAddress(e.target.value)} className="flex-1" />
-              <button type="button" className="text-fg-muted hover:text-accent-blue" aria-label="Location">
+              <button type="button" className={cn("text-fg-muted", accentHoverClass)} aria-label="Location">
                 <MapPin size={18} />
               </button>
-              <button type="button" className="text-fg-muted hover:text-accent-blue" aria-label="Notes">
+              <button type="button" className={cn("text-fg-muted", accentHoverClass)} aria-label="Notes">
                 <FileText size={18} />
               </button>
             </div>
@@ -288,7 +295,7 @@ export function CallIntakeForm({
           </div>
 
           {canManage && (
-            <Button type="submit" variant="boxed" accent="blue" disabled={submitting || !title.trim()} className="self-start">
+            <Button type="submit" variant="boxed" accent={accentId} disabled={submitting || !title.trim()} className="self-start">
               {submitting ? "Saving..." : call ? "Update Call" : "Create Call"}
             </Button>
           )}
@@ -321,7 +328,7 @@ export function CallIntakeForm({
             type="button"
             onClick={submitNote}
             disabled={!call || !noteText.trim()}
-            className="text-accent-blue disabled:opacity-40"
+            className={cn(accentClass, "disabled:opacity-40")}
             aria-label="Send note"
           >
             <Send size={18} />

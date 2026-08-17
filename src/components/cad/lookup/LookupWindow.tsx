@@ -17,6 +17,7 @@ import { FloatingWindow } from "@/components/floating-window/FloatingWindow";
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
 import { Button } from "@/components/ui/Button";
+import { accentIdFromVar, accentBorderTextClassFromVar } from "@/lib/departmentAccent";
 import { cn } from "@/lib/cn";
 
 type TabId = "name" | "vehicle" | "licence" | "identifier" | "phone" | "recordId" | "roblox";
@@ -62,9 +63,11 @@ interface LicenceResult {
 export function LookupWindow({
   onClose,
   initialTab = "name",
+  accentVar,
 }: {
   onClose: () => void;
   initialTab?: TabId;
+  accentVar?: string;
 }) {
   const [tab, setTab] = useState<TabId>(initialTab);
   const [values, setValues] = useState<Record<string, string>>({});
@@ -75,6 +78,8 @@ export function LookupWindow({
   const [notImplemented, setNotImplemented] = useState(false);
 
   const activeTab = TABS.find((t) => t.id === tab)!;
+  const accentId = accentIdFromVar(accentVar);
+  const activeTabClass = accentBorderTextClassFromVar(accentVar);
 
   function setField(field: string, value: string) {
     setValues((prev) => ({ ...prev, [field]: value }));
@@ -114,7 +119,7 @@ export function LookupWindow({
   }
 
   return (
-    <FloatingWindow title="Lookup" onClose={onClose} width={760}>
+    <FloatingWindow title="Lookup" onClose={onClose} width={760} accentVar={accentVar}>
       <div className="flex flex-col gap-4">
         <div className="flex flex-wrap gap-2 border-b border-border-subtle pb-3">
           {TABS.map((t) => (
@@ -131,9 +136,7 @@ export function LookupWindow({
               }}
               className={cn(
                 "inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-medium",
-                tab === t.id
-                  ? "border-accent-blue text-accent-blue"
-                  : "border-transparent text-fg-muted hover:text-fg",
+                tab === t.id ? activeTabClass : "border-transparent text-fg-muted hover:text-fg",
               )}
             >
               {t.icon}
@@ -174,7 +177,7 @@ export function LookupWindow({
           </button>
           <Button
             variant="boxed"
-            accent="blue"
+            accent={accentId}
             className="ml-auto"
             onClick={search}
             disabled={searching}

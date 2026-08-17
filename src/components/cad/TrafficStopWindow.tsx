@@ -5,6 +5,7 @@ import { FloatingWindow } from "@/components/floating-window/FloatingWindow";
 import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/Label";
 import { Button } from "@/components/ui/Button";
+import { accentIdFromVar, accentBorderTextClassFromVar } from "@/lib/departmentAccent";
 import { cn } from "@/lib/cn";
 
 interface DispatchedUnit {
@@ -15,7 +16,7 @@ interface DispatchedUnit {
   distanceKnown: boolean;
 }
 
-export function TrafficStopWindow({ onClose }: { onClose: () => void }) {
+export function TrafficStopWindow({ onClose, accentVar }: { onClose: () => void; accentVar?: string }) {
   const [vehicleDescription, setVehicleDescription] = useState("");
   const [plate, setPlate] = useState("");
   const [postal, setPostal] = useState("");
@@ -24,6 +25,9 @@ export function TrafficStopWindow({ onClose }: { onClose: () => void }) {
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
   const [dispatchedUnits, setDispatchedUnits] = useState<DispatchedUnit[]>([]);
+
+  const accentId = accentIdFromVar(accentVar);
+  const activeToggleClass = accentBorderTextClassFromVar(accentVar);
 
   const canSubmit =
     vehicleDescription.trim() &&
@@ -55,7 +59,7 @@ export function TrafficStopWindow({ onClose }: { onClose: () => void }) {
   }
 
   return (
-    <FloatingWindow title="Traffic Stop" onClose={onClose} width={480}>
+    <FloatingWindow title="Traffic Stop" onClose={onClose} width={480} accentVar={accentVar}>
       {sent ? (
         <div className="flex flex-col gap-3">
           <p className="text-sm text-accent-status-green">Traffic stop broadcast sent.</p>
@@ -109,9 +113,7 @@ export function TrafficStopWindow({ onClose }: { onClose: () => void }) {
                   onClick={() => setNeedsAdditional(opt.value)}
                   className={cn(
                     "rounded-lg border px-4 py-2 text-sm",
-                    needsAdditional === opt.value
-                      ? "border-accent-blue text-accent-blue"
-                      : "border-border-subtle text-fg-muted hover:text-fg",
+                    needsAdditional === opt.value ? activeToggleClass : "border-border-subtle text-fg-muted hover:text-fg",
                   )}
                 >
                   {opt.label}
@@ -136,7 +138,7 @@ export function TrafficStopWindow({ onClose }: { onClose: () => void }) {
               </p>
             </div>
           )}
-          <Button variant="boxed" accent="blue" onClick={submit} disabled={!canSubmit || sending} className="self-start">
+          <Button variant="boxed" accent={accentId} onClick={submit} disabled={!canSubmit || sending} className="self-start">
             {sending ? "Broadcasting..." : "Broadcast Traffic Stop"}
           </Button>
         </div>

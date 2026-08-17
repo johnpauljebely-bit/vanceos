@@ -5,6 +5,7 @@ import { FloatingWindow } from "@/components/floating-window/FloatingWindow";
 import { Button } from "@/components/ui/Button";
 import { DataTable, DataRow, DataCell } from "@/components/ui/DataTable";
 import { useLiveQuery } from "@/lib/useLiveQuery";
+import { accentIdFromVar, accentBorderTextClassFromVar } from "@/lib/departmentAccent";
 import { cn } from "@/lib/cn";
 
 export interface BoardCall {
@@ -21,10 +22,12 @@ export function CallsBoardWindow({
   onOpenCall,
   onClose,
   onJoined,
+  accentVar,
 }: {
   onOpenCall: (call: BoardCall) => void;
   onClose: () => void;
   onJoined?: () => void;
+  accentVar?: string;
 }) {
   const { data, mutate } = useLiveQuery<{ active: BoardCall[]; closed: BoardCall[] }>(
     "/api/calls?status=all",
@@ -33,6 +36,8 @@ export function CallsBoardWindow({
   const [joiningId, setJoiningId] = useState<string | null>(null);
 
   const rows = tab === "active" ? (data?.active ?? []) : (data?.closed ?? []);
+  const accentId = accentIdFromVar(accentVar);
+  const activeTabClass = accentBorderTextClassFromVar(accentVar);
 
   async function join(callId: string) {
     setJoiningId(callId);
@@ -47,7 +52,7 @@ export function CallsBoardWindow({
   }
 
   return (
-    <FloatingWindow title="Calls" onClose={onClose} width={640}>
+    <FloatingWindow title="Calls" onClose={onClose} width={640} accentVar={accentVar}>
       <div className="flex flex-col gap-4">
         <div className="flex gap-2 border-b border-border-subtle pb-3">
           {(["active", "closed"] as const).map((t) => (
@@ -57,7 +62,7 @@ export function CallsBoardWindow({
               onClick={() => setTab(t)}
               className={cn(
                 "rounded-lg border px-3 py-1.5 text-xs font-medium capitalize",
-                tab === t ? "border-accent-blue text-accent-blue" : "border-transparent text-fg-muted hover:text-fg",
+                tab === t ? activeTabClass : "border-transparent text-fg-muted hover:text-fg",
               )}
             >
               {t}
@@ -75,13 +80,13 @@ export function CallsBoardWindow({
               <DataCell className="capitalize">{call.source}</DataCell>
               <DataCell>
                 <div className="flex items-center gap-2">
-                  <Button variant="plain" accent="blue" onClick={() => onOpenCall(call)} className="px-0 text-xs">
+                  <Button variant="plain" accent={accentId} onClick={() => onOpenCall(call)} className="px-0 text-xs">
                     Open
                   </Button>
                   {tab === "active" ? (
                     <Button
                       variant="plain"
-                      accent="blue"
+                      accent={accentId}
                       onClick={() => join(call.id)}
                       disabled={joiningId === call.id}
                       className="px-0 text-xs"
@@ -89,7 +94,7 @@ export function CallsBoardWindow({
                       Join
                     </Button>
                   ) : (
-                    <Button variant="plain" accent="blue" onClick={() => reopen(call.id)} className="px-0 text-xs">
+                    <Button variant="plain" accent={accentId} onClick={() => reopen(call.id)} className="px-0 text-xs">
                       Reopen
                     </Button>
                   )}

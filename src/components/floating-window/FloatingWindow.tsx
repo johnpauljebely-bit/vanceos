@@ -11,6 +11,7 @@ export function FloatingWindow({
   initial = { x: 160, y: 120 },
   width = 720,
   accentVar = "--accent-blue",
+  footer,
   children,
 }: {
   title: string;
@@ -21,6 +22,10 @@ export function FloatingWindow({
    * department/portal (civilian=red, police=blue, ...) keep its own accent
    * on a shared window chrome instead of every window looking identical. */
   accentVar?: string;
+  /** Pinned below the scrollable body, always visible — put Save/Cancel/etc
+   * here instead of at the end of `children` so a tall form never hides its
+   * only action row below the fold ("where's the save button" bug). */
+  footer?: React.ReactNode;
   children: React.ReactNode;
 }) {
   const accent = `var(${accentVar})`;
@@ -152,7 +157,12 @@ export function FloatingWindow({
             </button>
           </div>
         </div>
-        {!minimized && <div className="min-h-0 overflow-y-auto p-4">{children}</div>}
+        {!minimized && (
+          <>
+            <div className="min-h-0 flex-1 overflow-y-auto p-4">{children}</div>
+            {footer && <div className="shrink-0 border-t border-border-subtle p-4">{footer}</div>}
+          </>
+        )}
       </div>
     </>
   );
