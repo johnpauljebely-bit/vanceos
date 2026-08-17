@@ -34,18 +34,17 @@ export default async function LoginPage({
     <main className="relative flex min-h-screen w-full items-center justify-end bg-black p-6 sm:p-12">
       {/* Background layer isolated in its own overflow-hidden box so the
           `fill` image never forces a scrollbar — page content (below)
-          stays free to scroll on short viewports instead of being clipped. */}
+          stays free to scroll on short viewports instead of being clipped.
+          No added CSS gradient here — this image file already has one
+          baked in; stacking another on top was double-darkening it. */}
       <div className="absolute inset-0 overflow-hidden">
         <Image
           src="/brand/login-bg.png"
           alt=""
           fill
           priority
-          className="object-cover opacity-70"
+          className="object-cover"
         />
-        {/* Left→right dark scrim: image stays legible on the left, text sits on solid dark on the right. */}
-        <div className="absolute inset-0 bg-gradient-to-r from-black/10 via-black/70 to-black" />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/30" />
       </div>
 
       {/* This block itself stays positioned on the right side of the page
