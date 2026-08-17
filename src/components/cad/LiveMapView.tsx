@@ -148,13 +148,13 @@ export function LiveMapView({
         </button>
       </div>
 
-      {/* Zoom controls — kept on the left with the toggles when embedded,
-          since the right side is reserved for the floating Active Call /
-          Active Units cards in the embedded dashboard layout. */}
+      {/* Zoom controls — bottom-right when embedded so they never collide
+          with the toggles (top-left) or the Overview widget (bottom-left,
+          see CadMapOverview) sharing this same map area. */}
       <div
         className={cn(
           "absolute z-20 flex flex-col gap-1 rounded-xl border border-border-subtle bg-surface p-1",
-          embedded ? "bottom-4 left-4" : cn("right-4", controlsTop),
+          embedded ? "bottom-4 right-4" : cn("right-4", controlsTop),
         )}
       >
         <button

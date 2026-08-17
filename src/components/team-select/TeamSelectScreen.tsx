@@ -1,12 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { LogOut, X } from "lucide-react";
 import { signOut } from "next-auth/react";
 import { TeamTile, type TeamTileData } from "./TeamTile";
 import { DeltaPdUnitSelectCard } from "@/components/leo/DeltaPdUnitSelectCard";
+import { AUDIO_GATE_SESSION_KEY } from "@/lib/audioGateSession";
 import { cn } from "@/lib/cn";
 
 export function TeamSelectScreen({
@@ -27,6 +28,14 @@ export function TeamSelectScreen({
   const [hovered, setHovered] = useState<string | null>(null);
   const [whitelistedOpen, setWhitelistedOpen] = useState(false);
   const [policeOpen, setPoliceOpen] = useState(false);
+
+  // Landing on team-select is "entering fresh" — reset the audio gate so
+  // the next CAD entry shows it again, instead of it either never
+  // reappearing (stale sessionStorage from days ago) or popping up
+  // mid-shift (see AudioGateOverlay for the other half of this fix).
+  useEffect(() => {
+    sessionStorage.removeItem(AUDIO_GATE_SESSION_KEY);
+  }, []);
 
   const whitelistedAccess = rcmpAccess || bchpAccess;
 
@@ -111,35 +120,35 @@ export function TeamSelectScreen({
       </div>
 
       {whitelistedOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70" onClick={() => setWhitelistedOpen(false)}>
-          <div
-            className="flex w-full max-w-xs flex-col gap-3 rounded-2xl border border-white/10 bg-bg p-6"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h2 className="text-center text-lg font-bold text-white">Choose Unit</h2>
-            {rcmpAccess && (
-              <Link
-                href="/leo/rcmp/unit-select"
-                className="rounded-xl border border-white/10 px-4 py-3 text-center text-sm font-semibold text-white hover:border-accent-verify-green hover:bg-accent-verify-green/10"
-              >
-                RCMP
-              </Link>
-            )}
-            {bchpAccess && (
-              <Link
-                href="/leo/bchp/unit-select"
-                className="rounded-xl border border-white/10 px-4 py-3 text-center text-sm font-semibold text-white hover:border-accent-verify-green hover:bg-accent-verify-green/10"
-              >
-                BCHP
-              </Link>
-            )}
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-6" onClick={() => setWhitelistedOpen(false)}>
+          <div className="relative w-full max-w-xs" onClick={(e) => e.stopPropagation()}>
             <button
               type="button"
               onClick={() => setWhitelistedOpen(false)}
-              className="mt-1 text-center text-xs text-white/40 hover:text-white/70"
+              aria-label="Close"
+              className="absolute -top-3 -right-3 flex h-8 w-8 items-center justify-center rounded-full border border-border-subtle bg-bg text-white/60 hover:text-white"
             >
-              Cancel
+              <X size={14} />
             </button>
+            <div className="flex flex-col gap-3 rounded-2xl border border-border-subtle bg-surface p-6">
+              <h2 className="text-center text-lg font-bold text-fg">Choose Department</h2>
+              {rcmpAccess && (
+                <Link
+                  href="/leo/rcmp/unit-select"
+                  className="rounded-xl border border-border-subtle px-4 py-3 text-center text-sm font-semibold text-fg hover:border-accent-verify-green hover:bg-accent-verify-green/10"
+                >
+                  RCMP
+                </Link>
+              )}
+              {bchpAccess && (
+                <Link
+                  href="/leo/bchp/unit-select"
+                  className="rounded-xl border border-border-subtle px-4 py-3 text-center text-sm font-semibold text-fg hover:border-accent-verify-green hover:bg-accent-verify-green/10"
+                >
+                  BCHP
+                </Link>
+              )}
+            </div>
           </div>
         </div>
       )}

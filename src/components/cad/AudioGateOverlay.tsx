@@ -4,17 +4,26 @@ import { useState } from "react";
 import { Volume2 } from "lucide-react";
 import { unlockAudio } from "@/lib/dispatchAudio";
 import { accentIdFromVar, accentTextClassFromVar } from "@/lib/departmentAccent";
+import { AUDIO_GATE_SESSION_KEY } from "@/lib/audioGateSession";
 import { cn } from "@/lib/cn";
 
 /**
- * One-time gate before dispatch alerts (beep + spoken callsign) can play.
- * Browsers block audio until a real user gesture, and there's no API to
- * check actual device/tab volume — this ensures audio CAN play, it can't
- * verify your volume is actually up. Disappears permanently for this tab
- * once clicked.
+ * One-time-per-CAD-session gate before dispatch alerts (beep + spoken
+ * callsign) can play. Browsers block audio until a real user gesture, and
+ * there's no API to check actual device/tab volume — this ensures audio
+ * CAN play, it can't verify your volume is actually up.
+ *
+ * "Dismissed" is tracked in sessionStorage, not component state, so it
+ * survives incidental remounts of this panel while you're on the CAD
+ * (switching units, etc. — otherwise the gate would pop back up mid-shift,
+ * which is exactly the "showing randomly" bug reported). Team-select clears
+ * that key on load (see AUDIO_GATE_SESSION_KEY), so re-entering the CAD
+ * through team-select always shows it fresh again.
  */
 export function AudioGateOverlay({ accentVar }: { accentVar?: string } = {}) {
-  const [dismissed, setDismissed] = useState(false);
+  const [dismissed, setDismissed] = useState(
+    () => typeof window !== "undefined" && sessionStorage.getItem(AUDIO_GATE_SESSION_KEY) === "1",
+  );
   const accentTextClass = accentTextClassFromVar(accentVar);
   const accentBorderClass = accentIdFromVar(accentVar) === "verify-green" ? "border-accent-verify-green" : "border-accent-blue";
   const accentHoverBgClass =
@@ -24,6 +33,7 @@ export function AudioGateOverlay({ accentVar }: { accentVar?: string } = {}) {
 
   async function enable() {
     await unlockAudio();
+    sessionStorage.setItem(AUDIO_GATE_SESSION_KEY, "1");
     setDismissed(true);
   }
 

@@ -4,7 +4,8 @@ import { requireApiSession } from "@/lib/session";
 import { listCallsignsForUser, claimDeltaPdCallsign, getOwnershipCallsign } from "@/db/queries/callsigns";
 import { getLinkForDiscordId } from "@/db/queries/civilians";
 import { getLivePlayerByUsername } from "@/db/queries/livePlayers";
-import { setUnitSession } from "@/lib/unitSession";
+import { setUnitSession, getUnitSession } from "@/lib/unitSession";
+import { setUnitOffDutyByCallsign } from "@/db/queries/liveUnits";
 import { DELTA_PD_CALLSIGN_RANGE } from "@/lib/roles";
 
 const schema = z.object({
@@ -56,6 +57,14 @@ export async function POST(request: Request) {
         return NextResponse.json({ error: "callsign_not_owned" }, { status: 403 });
       }
     }
+  }
+
+  // Switching units leaves the callsign they're leaving behind as a
+  // permanent "ghost" in Active Units otherwise — setUnitDuty (called next,
+  // from the CAD panel mount) only ever upserts the *new* callsign.
+  const previous = await getUnitSession();
+  if (previous && `${previous.department}-${previous.number}` !== `${department}-${number}`) {
+    await setUnitOffDutyByCallsign(`${previous.department}-${previous.number}`);
   }
 
   await setUnitSession(parsed.data);
