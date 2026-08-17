@@ -9,9 +9,11 @@ import { AudioGateOverlay } from "./AudioGateOverlay";
 import { playDispatchAlert } from "@/lib/dispatchAudio";
 import { useLiveQuery } from "@/lib/useLiveQuery";
 import { SecondaryToolbar } from "./SecondaryToolbar";
+import { CadSidebar } from "./CadSidebar";
 import { CallIntakeForm } from "./CallIntakeForm";
 import { ActiveUnitsPanel } from "./ActiveUnitsPanel";
 import { ActiveSquadsPanel } from "./ActiveSquadsPanel";
+import { LiveMapView } from "./LiveMapView";
 import { LookupWindow } from "./lookup/LookupWindow";
 import { CallsBoardWindow, type BoardCall } from "./CallsBoardWindow";
 import { WarrantsBolosWindow } from "./WarrantsBolosWindow";
@@ -247,23 +249,44 @@ export function CadPanel({
           onOpenDraft={openDraft}
           onOpenUnitManager={() => setUnitManagerOpen(true)}
         />
-        <div className="grid flex-1 grid-cols-1 divide-y divide-border-subtle overflow-hidden lg:grid-cols-2 lg:divide-x lg:divide-y-0">
-          <CallIntakeForm
-            key={viewedCall?.id ?? "new"}
-            initialCall={viewedCall}
-            canManage={canManage}
-            onJoined={() => setStatus("enroute")}
-            onSelfCleared={() => {
-              setStatus("available");
-              setAttachedCallId(null);
-              setViewedCall(null);
+        <div className="relative flex flex-1 overflow-hidden">
+          <CadSidebar
+            onSearch={() => {
+              setLookupTab("name");
+              setLookupOpen(true);
             }}
-            onCloseView={() => setViewedCall(null)}
+            onCallLookup={() => setCallsBoardOpen(true)}
             accentVar={accentVar}
           />
-          <div className="flex flex-col overflow-y-auto">
-            <ActiveUnitsPanel accentVar={accentVar} />
-            <ActiveSquadsPanel />
+
+          <div className="relative flex flex-1 flex-col overflow-hidden">
+            <LiveMapView embedded accentVar={accentVar} />
+
+            {/* Active Call — top-right, floating over the map. Wrapper is a
+                bounded flex column so CallIntakeForm's own flex-1 + internal
+                overflow-y-auto actually get a height to work with, instead
+                of growing past max-h and having content silently clipped. */}
+            <div className="absolute right-4 top-4 z-10 flex max-h-[46vh] w-[380px] flex-col overflow-hidden rounded-xl border border-border-subtle bg-surface/95 shadow-2xl backdrop-blur">
+              <CallIntakeForm
+                key={viewedCall?.id ?? "new"}
+                initialCall={viewedCall}
+                canManage={canManage}
+                onJoined={() => setStatus("enroute")}
+                onSelfCleared={() => {
+                  setStatus("available");
+                  setAttachedCallId(null);
+                  setViewedCall(null);
+                }}
+                onCloseView={() => setViewedCall(null)}
+                accentVar={accentVar}
+              />
+            </div>
+
+            {/* Active Units / Squads — bottom-right, floating over the map. */}
+            <div className="absolute bottom-4 right-4 z-10 flex max-h-[42vh] w-[420px] flex-col overflow-y-auto rounded-xl border border-border-subtle bg-surface/95 shadow-2xl backdrop-blur">
+              <ActiveUnitsPanel accentVar={accentVar} />
+              <ActiveSquadsPanel />
+            </div>
           </div>
         </div>
       </div>

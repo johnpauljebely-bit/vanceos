@@ -39,7 +39,10 @@ function jitter(index: number): [number, number] {
   return [Math.cos(angle) * radius, Math.sin(angle) * radius];
 }
 
-export function LiveMapView({ accentVar }: { accentVar?: string } = {}) {
+export function LiveMapView({
+  accentVar,
+  embedded = false,
+}: { accentVar?: string; embedded?: boolean } = {}) {
   const pathname = usePathname();
   // Path is always /leo/{department}/cad/map — derive the CAD link from it
   // rather than threading department down as a prop.
@@ -96,25 +99,29 @@ export function LiveMapView({ accentVar }: { accentVar?: string } = {}) {
     dragStart.current = null;
   }
 
+  const controlsTop = embedded ? "top-4" : "top-16";
+
   return (
     <div className="relative flex flex-1 flex-col overflow-hidden bg-black">
-      <div className="flex items-center justify-between border-b border-border-subtle bg-surface px-4 py-3">
-        <div className="flex items-center gap-4">
-          <Link
-            href={cadHref}
-            className={cn("inline-flex items-center gap-1.5 text-sm font-medium text-fg-muted", accentHoverClass)}
-          >
-            <ArrowLeft size={14} /> Back to CAD
-          </Link>
-          <h1 className="text-lg font-bold text-fg">Map</h1>
+      {!embedded && (
+        <div className="flex items-center justify-between border-b border-border-subtle bg-surface px-4 py-3">
+          <div className="flex items-center gap-4">
+            <Link
+              href={cadHref}
+              className={cn("inline-flex items-center gap-1.5 text-sm font-medium text-fg-muted", accentHoverClass)}
+            >
+              <ArrowLeft size={14} /> Back to CAD
+            </Link>
+            <h1 className="text-lg font-bold text-fg">Map</h1>
+          </div>
+          <p className="text-xs text-fg-muted">
+            Live positions from real in-game coordinates where available, postal-level otherwise.
+          </p>
         </div>
-        <p className="text-xs text-fg-muted">
-          Live positions from real in-game coordinates where available, postal-level otherwise.
-        </p>
-      </div>
+      )}
 
       {/* Show/hide toggles */}
-      <div className="absolute left-4 top-16 z-20 flex gap-2">
+      <div className={cn("absolute left-4 z-20 flex gap-2", controlsTop)}>
         <button
           type="button"
           onClick={() => setShowUnits((v) => !v)}
@@ -141,8 +148,15 @@ export function LiveMapView({ accentVar }: { accentVar?: string } = {}) {
         </button>
       </div>
 
-      {/* Zoom controls */}
-      <div className="absolute right-4 top-16 z-20 flex flex-col gap-1 rounded-xl border border-border-subtle bg-surface p-1">
+      {/* Zoom controls — kept on the left with the toggles when embedded,
+          since the right side is reserved for the floating Active Call /
+          Active Units cards in the embedded dashboard layout. */}
+      <div
+        className={cn(
+          "absolute z-20 flex flex-col gap-1 rounded-xl border border-border-subtle bg-surface p-1",
+          embedded ? "bottom-4 left-4" : cn("right-4", controlsTop),
+        )}
+      >
         <button
           type="button"
           onClick={() => setZoom((z) => Math.min(4, +(z + 0.25).toFixed(2)))}
