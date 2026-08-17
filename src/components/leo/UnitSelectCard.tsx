@@ -30,7 +30,18 @@ const DEPT_LABEL: Record<string, string> = {
 
 const MAX_PROFILES = 3;
 
+// Accent split: Delta PD = blue, RCMP/BCHP = green.
+function accentFor(department: string): "blue" | "verify-green" {
+  return department === "rcmp" || department === "bchp" ? "verify-green" : "blue";
+}
+
 export function UnitSelectCard({ department, callsigns }: { department: string; callsigns: CallsignRow[] }) {
+  const accent = accentFor(department);
+  const selectedClasses =
+    accent === "verify-green"
+      ? "border-accent-verify-green text-accent-verify-green"
+      : "border-accent-blue text-accent-blue";
+  const linkClass = accent === "verify-green" ? "text-accent-verify-green" : "text-accent-blue";
   const [selected, setSelected] = useState<CallsignRow | null>(callsigns[0] ?? null);
   const [profiles, setProfiles] = useState<UnitProfile[] | null>(null);
   const [selectedProfileId, setSelectedProfileId] = useState<number | null>(null);
@@ -131,7 +142,7 @@ export function UnitSelectCard({ department, callsigns }: { department: string; 
               onClick={() => setSelected(c)}
               className={cn(
                 "flex items-center justify-between rounded-lg border px-4 py-3 text-left",
-                isSelected ? "border-accent-blue text-accent-blue" : "border-border-subtle text-fg hover:border-fg-muted",
+                isSelected ? selectedClasses : "border-border-subtle text-fg hover:border-fg-muted",
               )}
             >
               <span className="inline-flex items-center gap-2 font-semibold">
@@ -157,9 +168,7 @@ export function UnitSelectCard({ department, callsigns }: { department: string; 
                 onClick={() => setSelectedProfileId(p.id)}
                 className={cn(
                   "flex items-center justify-between rounded-lg border px-4 py-3 text-left",
-                  selectedProfileId === p.id
-                    ? "border-accent-blue text-accent-blue"
-                    : "border-border-subtle text-fg hover:border-fg-muted",
+                  selectedProfileId === p.id ? selectedClasses : "border-border-subtle text-fg hover:border-fg-muted",
                 )}
               >
                 <div>
@@ -174,7 +183,7 @@ export function UnitSelectCard({ department, callsigns }: { department: string; 
           </div>
           <Button
             variant="plain"
-            accent="blue"
+            accent={accent}
             icon={<Plus size={14} />}
             disabled={atLimit}
             onClick={() => setShowNewForm(true)}
@@ -191,7 +200,7 @@ export function UnitSelectCard({ department, callsigns }: { department: string; 
               <button
                 type="button"
                 onClick={() => setShowNewForm(false)}
-                className="text-xs text-accent-blue hover:underline"
+                className={cn("text-xs hover:underline", linkClass)}
               >
                 Use a saved unit instead
               </button>
