@@ -39,6 +39,12 @@
      don't conflate the two. */
   --accent-verify-green: #22c55e;
   --accent-verify-green-fg: #06210f;
+
+  /* Team-select's Civilian tile accent — deliberately a lighter/softer red
+     than --accent-red (Panic-only, full intensity, never reused elsewhere
+     per that token's own rule). Distinct token so the two stay decoupled. */
+  --accent-light-red: #f87171;
+  --accent-light-red-fg: #2a0808;
 }
 
 @theme inline {
@@ -61,8 +67,10 @@
   --color-accent-blue-fg: var(--accent-blue-fg);
   --color-accent-verify-green: var(--accent-verify-green);
   --color-accent-verify-green-fg: var(--accent-verify-green-fg);
+  --color-accent-light-red: var(--accent-light-red);
+  --color-accent-light-red-fg: var(--accent-light-red-fg);
 
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-poppins);
   --font-mono: var(--font-geist-mono);
 }
 
@@ -70,6 +78,10 @@ body {
   background: var(--bg);
   color: var(--fg);
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+  /* Tighter tracking per the user's Canva reference ("-68") — Canva's
+     letter-spacing unit doesn't map 1:1 to CSS em/px, this is an
+     approximation of "letters closer together," not an exact conversion. */
+  letter-spacing: -0.02em;
 }
 
 /* Firefox: keep number inputs' spinners from clashing with the dark inputs */
