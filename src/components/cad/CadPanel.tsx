@@ -341,8 +341,8 @@ export function CadPanel({
       {trafficStopOpen && <TrafficStopWindow onClose={() => setTrafficStopOpen(false)} accentVar={accentVar} />}
       {notepadOpen && <NotepadWindow onClose={() => setNotepadOpen(false)} accentVar={accentVar} />}
 
-      <SelfDispatchApprovalPopup />
-      <AudioGateOverlay />
+      <SelfDispatchApprovalPopup accentVar={accentVar} />
+      <AudioGateOverlay accentVar={accentVar} />
 
       {selfDispatchError && (
         <div className="fixed bottom-6 right-6 z-[200] max-w-xs rounded-lg border border-accent-red bg-surface px-4 py-3 text-sm text-fg shadow-2xl">

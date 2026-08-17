@@ -3,17 +3,21 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { LogOut, Shuffle, Maximize, StickyNote, Search, FileText, Radar } from "lucide-react";
+import { accentTextClassFromVar } from "@/lib/departmentAccent";
 import { cn } from "@/lib/cn";
 
 export function QuickActionsMenu({
   onOpenNotepad,
   onOpenLookup,
   onOpenRecords,
+  accentVar,
 }: {
   onOpenNotepad: () => void;
   onOpenLookup: () => void;
   onOpenRecords: () => void;
+  accentVar?: string;
 }) {
+  const accentClass = accentTextClassFromVar(accentVar);
   const [open, setOpen] = useState(false);
   const router = useRouter();
 
@@ -34,7 +38,7 @@ export function QuickActionsMenu({
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="flex h-9 w-9 items-center justify-center rounded-lg border border-border-subtle text-accent-blue hover:bg-white/5"
+        className={cn("flex h-9 w-9 items-center justify-center rounded-lg border border-border-subtle hover:bg-white/5", accentClass)}
         aria-label="Quick actions"
       >
         <Radar size={18} />

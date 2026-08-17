@@ -88,7 +88,7 @@ export function VehicleRegistrationWindow({
         <section className="rounded-xl border border-border-subtle p-4">
           <h3 className="mb-3 text-lg font-bold text-fg">Vehicle Information</h3>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-            <ReadOnly label="Status" value="Active" valueClassName="text-accent-status-green" />
+            <ReadOnly label="Status" value="Active" valueClassName="text-accent-light-red" />
             <div>
               <Label required>Plate</Label>
               <Input value={plate} onChange={(e) => setPlate(e.target.value)} className="mt-1" />

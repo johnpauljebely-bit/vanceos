@@ -11,8 +11,11 @@ export default async function CivilianSetupPage() {
   if (profile.gender) redirect("/civilian");
 
   return (
-    <main className="flex flex-1 items-center justify-center p-8">
-      <GenderSetupForm />
+    <main className="relative flex flex-1 items-center justify-center overflow-hidden bg-bg p-8">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-10%,var(--accent-light-red)_0%,transparent_60%)] opacity-[0.12]" />
+      <div className="relative z-10">
+        <GenderSetupForm />
+      </div>
     </main>
   );
 }

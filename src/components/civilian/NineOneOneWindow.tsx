@@ -42,7 +42,7 @@ export function NineOneOneWindow({
     <FloatingWindow title={emergency ? "Call 911" : "Call 311 — Non-Emergency"} onClose={onClose} width={520} accentVar="--accent-light-red">
       {status === "sent" ? (
         <div className="flex flex-col gap-4">
-          <p className="text-sm text-accent-status-green">
+          <p className="text-sm text-accent-light-red">
             {emergency ? "Dispatched — help is on the way." : "Sent — an available unit will follow up."}
           </p>
           <Button variant="plain" accent="neutral" icon={<X size={14} />} onClick={onClose}>

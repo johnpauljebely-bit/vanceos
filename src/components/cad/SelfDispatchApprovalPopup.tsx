@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import { ShieldQuestion } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import { accentIdFromVar, accentTextClassFromVar } from "@/lib/departmentAccent";
+import { cn } from "@/lib/cn";
 
 interface PendingRequest {
   id: number;
@@ -14,9 +16,11 @@ interface PendingRequest {
  * currently requesting Self Dispatch — anyone with an eligible rank could
  * be asked to approve someone else's request at any time.
  */
-export function SelfDispatchApprovalPopup() {
+export function SelfDispatchApprovalPopup({ accentVar }: { accentVar?: string } = {}) {
   const [pending, setPending] = useState<PendingRequest | null>(null);
   const [responding, setResponding] = useState(false);
+  const accentTextClass = accentTextClassFromVar(accentVar);
+  const accentBorderClass = accentIdFromVar(accentVar) === "verify-green" ? "border-accent-verify-green" : "border-accent-blue";
 
   useEffect(() => {
     const id = setInterval(() => {
@@ -44,8 +48,8 @@ export function SelfDispatchApprovalPopup() {
 
   return (
     <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/60">
-      <div className="w-full max-w-sm rounded-2xl border border-accent-blue bg-surface p-6 text-center shadow-2xl">
-        <ShieldQuestion size={32} className="mx-auto mb-3 text-accent-blue" />
+      <div className={cn("w-full max-w-sm rounded-2xl border bg-surface p-6 text-center shadow-2xl", accentBorderClass)}>
+        <ShieldQuestion size={32} className={cn("mx-auto mb-3", accentTextClass)} />
         <p className="text-sm text-fg">
           <span className="font-bold">{pending.requesterCallsignKey.split("-")[1]}</span> wants the ability to
           self dispatch this session.

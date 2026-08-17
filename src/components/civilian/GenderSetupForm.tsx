@@ -37,7 +37,7 @@ export function GenderSetupForm() {
             onClick={() => setSelected(opt)}
             className={`rounded-lg border px-4 py-2 text-left text-sm ${
               selected === opt
-                ? "border-accent-blue text-accent-blue"
+                ? "border-accent-light-red text-accent-light-red"
                 : "border-border-subtle text-fg hover:border-fg-muted"
             }`}
           >
@@ -45,7 +45,7 @@ export function GenderSetupForm() {
           </button>
         ))}
       </div>
-      <Button variant="boxed" accent="blue" disabled={!selected || saving} onClick={confirm}>
+      <Button variant="boxed" accent="light-red" disabled={!selected || saving} onClick={confirm}>
         {saving ? "Saving..." : "Continue"}
       </Button>
     </div>

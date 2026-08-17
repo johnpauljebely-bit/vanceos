@@ -71,7 +71,7 @@ export function DriversLicenceWindow({
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
             <div>
               <Label>Licence</Label>
-              <div className="mt-1 text-sm text-accent-status-green">Active</div>
+              <div className="mt-1 text-sm text-accent-light-red">Active</div>
             </div>
             <ReadOnly label="Licence Number" value="Generated upon creation" />
             <div>

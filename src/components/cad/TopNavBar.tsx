@@ -11,7 +11,7 @@ import { PanicDropdown } from "./PanicDropdown";
 import { QuickActionsMenu } from "./QuickActionsMenu";
 import { QuickActionSearchBar, type QuickAction } from "./QuickActionSearchBar";
 import type { UnitStatus } from "@/lib/unitStatus";
-import { accentIdForDepartment, accentTextClassForDepartment } from "@/lib/departmentAccent";
+import { accentIdForDepartment, accentTextClassForDepartment, accentVarForDepartment } from "@/lib/departmentAccent";
 import { cn } from "@/lib/cn";
 
 export type SelfDispatchState = "off" | "waiting" | "on";
@@ -48,10 +48,16 @@ export function TopNavBar({
   const isMap = pathname === mapHref;
   const accentClass = accentTextClassForDepartment(department);
   const accentId = accentIdForDepartment(department);
+  const accentVar = accentVarForDepartment(department);
 
   return (
     <div className="flex items-center gap-4 border-b border-border-subtle bg-surface px-4 py-3">
-      <QuickActionsMenu onOpenNotepad={onOpenNotepad} onOpenLookup={onOpenLookup} onOpenRecords={onOpenRecords} />
+      <QuickActionsMenu
+        onOpenNotepad={onOpenNotepad}
+        onOpenLookup={onOpenLookup}
+        onOpenRecords={onOpenRecords}
+        accentVar={accentVar}
+      />
 
       <StatusDropdown status={status} onChange={onStatusChange} />
 

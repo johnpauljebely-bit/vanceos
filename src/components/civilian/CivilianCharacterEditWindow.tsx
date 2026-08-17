@@ -75,7 +75,7 @@ export function CivilianCharacterEditWindow({
       accentVar="--accent-light-red"
       footer={
         <div className="flex gap-3">
-          <Button variant="boxed" accent="status-green" icon={<Save size={14} />} onClick={save} disabled={saving}>
+          <Button variant="boxed" accent="light-red" icon={<Save size={14} />} onClick={save} disabled={saving}>
             {saving ? "Saving..." : "Save"}
           </Button>
           <Button variant="boxed" accent="red" icon={<Ban size={14} />} onClick={onClose}>
