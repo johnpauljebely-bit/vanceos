@@ -39,6 +39,14 @@
      per that token's own rule). Distinct token so the two stay decoupled. */
   --accent-light-red: #f87171;
   --accent-light-red-fg: #2a0808;
+
+  /* Shared focus-ring color for every Input/Select/Textarea app-wide.
+     Defaults to blue (Delta PD) but each portal's root overrides this one
+     variable inline — civilian sets it to --accent-light-red, RCMP/BCHP set
+     it to --accent-verify-green — so focus states never leak the wrong
+     department's color. Never target --accent-blue directly from a form
+     primitive; always go through this indirection. */
+  --accent-focus: var(--accent-blue);
 }
 
 @theme inline {

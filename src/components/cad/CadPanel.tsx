@@ -1,19 +1,19 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Search, FileText, Gavel, Home, Map as MapIcon, StickyNote } from "lucide-react";
+import { Search, FileText, Gavel, StickyNote } from "lucide-react";
 import { WindowManagerProvider } from "@/components/floating-window/WindowManagerProvider";
-import { TopNavBar, type SelfDispatchState } from "./TopNavBar";
+import { CadNavBar, type SelfDispatchState } from "./CadNavBar";
 import { SelfDispatchApprovalPopup } from "./SelfDispatchApprovalPopup";
 import { AudioGateOverlay } from "./AudioGateOverlay";
 import { playDispatchAlert } from "@/lib/dispatchAudio";
 import { useLiveQuery } from "@/lib/useLiveQuery";
-import { SecondaryToolbar } from "./SecondaryToolbar";
-import { CadSidebar } from "./CadSidebar";
-import { CallIntakeForm } from "./CallIntakeForm";
-import { ActiveUnitsPanel } from "./ActiveUnitsPanel";
-import { ActiveSquadsPanel } from "./ActiveSquadsPanel";
+import { CadSidebar, type SidebarItemId } from "./CadSidebar";
+import { CadHomePanel } from "./CadHomePanel";
+import { CallDetailWindow } from "./CallDetailWindow";
+import type { CompactCall } from "./CallCard";
 import { LiveMapView } from "./LiveMapView";
+import { CadMapOverview } from "./CadMapOverview";
 import { LookupWindow } from "./lookup/LookupWindow";
 import { CallsBoardWindow, type BoardCall } from "./CallsBoardWindow";
 import { WarrantsBolosWindow } from "./WarrantsBolosWindow";
@@ -62,6 +62,7 @@ export function CadPanel({
   const [notepadOpen, setNotepadOpen] = useState(false);
   const [selfDispatchState, setSelfDispatchState] = useState<SelfDispatchState>("off");
   const [selfDispatchError, setSelfDispatchError] = useState<string | null>(null);
+  const [sidebarActive, setSidebarActive] = useState<SidebarItemId>("home");
 
   // Entering the panel with a unit selected IS being on duty — Active Units
   // presence is independent of the 5-state status (an Unavailable/Busy unit
@@ -90,7 +91,10 @@ export function CadPanel({
   }, []);
 
   const [attachedCallId, setAttachedCallId] = useState(initialCall?.id ?? null);
-  const [viewedCall, setViewedCall] = useState<ActiveCall | null>(initialCall);
+  // The full structured call form only opens on demand now (Edit / New
+  // Call) — it's no longer permanently rendered inline, see CadHomePanel's
+  // compact CallCard list for the always-visible summary instead.
+  const [viewedCall, setViewedCall] = useState<ActiveCall | null>(null);
   const canManage = selfDispatchState === "on" || viewedCall === null || viewedCall.id === attachedCallId;
 
   // Auto-dispatch alert: watch our own live_units row for a call_id that
@@ -103,7 +107,7 @@ export function CadPanel({
   }>("/api/live-units", 4000);
 
   useEffect(() => {
-    const mine = liveUnitsData?.liveUnits.find((u) => u.callsignKey === myCallsignKey);
+    const mine = liveUnitsData?.liveUnits?.find((u) => u.callsignKey === myCallsignKey);
     if (!mine) return;
     if (mine.callId && mine.callId !== lastAlertedCallId.current) {
       lastAlertedCallId.current = mine.callId;
@@ -193,104 +197,112 @@ export function CadPanel({
     { id: "records", label: "Records", icon: <FileText size={14} className={accentClass} />, end: "Window" },
     { id: "warrants", label: "Warrants & BOLOs", icon: <Gavel size={14} className={accentClass} />, end: "Window" },
     { id: "notepad", label: "Notepad", icon: <StickyNote size={14} className={accentClass} />, end: "Window" },
-    { id: "home", label: "Home", icon: <Home size={14} className={accentClass} />, end: "Nav" },
-    { id: "map", label: "Map", icon: <MapIcon size={14} className={accentClass} />, end: "Nav" },
   ];
 
   function handleQuickAction(action: QuickAction) {
     switch (action.id) {
       case "lookup":
+        setSidebarActive("search");
         setLookupTab("name");
         setLookupOpen(true);
         break;
       case "records":
+        setSidebarActive("records");
         setRecordsOpen(true);
         break;
       case "warrants":
+        setSidebarActive("warrants");
         openWarrantsBolos("warrants");
         break;
       case "notepad":
+        setSidebarActive("notepad");
         setNotepadOpen(true);
         break;
     }
   }
 
+  function openCallDetail(call: CompactCall) {
+    setViewedCall({ id: call.id, title: call.title });
+  }
+
   return (
-    <WindowManagerProvider>
+    <WindowManagerProvider accentVar={accentVar}>
       <div className="flex flex-1 flex-col">
-        <TopNavBar
+        <CadNavBar
           department={department}
+          unitNumber={unitNumber}
           status={status}
           onStatusChange={changeStatus}
           selfDispatchState={selfDispatchState}
           onRequestSelfDispatch={requestSelfDispatch}
-          onOpenTrafficStop={() => setTrafficStopOpen(true)}
-          onOpenNotepad={() => setNotepadOpen(true)}
-          onOpenLookup={() => {
-            setLookupTab("name");
-            setLookupOpen(true);
-          }}
-          onOpenRecords={() => setRecordsOpen(true)}
           quickActions={quickActions}
           onQuickAction={handleQuickAction}
-        />
-        <SecondaryToolbar
-          callsign={String(unitNumber)}
-          department={department}
-          status={status}
-          onSearch={() => {
-            setLookupTab("name");
-            setLookupOpen(true);
-          }}
-          onGetCall={() => setCallsBoardOpen(true)}
-          onRecords={() => setRecordsOpen(true)}
-          onWarrants={(tab) => openWarrantsBolos(tab ?? "warrants")}
-          onCreateRecord={startRecord}
-          onOpenDraft={openDraft}
           onOpenUnitManager={() => setUnitManagerOpen(true)}
         />
+
         <div className="relative flex flex-1 overflow-hidden">
           <CadSidebar
+            active={sidebarActive}
+            onHome={() => setSidebarActive("home")}
             onSearch={() => {
+              setSidebarActive("search");
               setLookupTab("name");
               setLookupOpen(true);
             }}
-            onCallLookup={() => setCallsBoardOpen(true)}
+            onCallLookup={() => {
+              setSidebarActive("call-lookup");
+              setCallsBoardOpen(true);
+            }}
+            onRecords={() => {
+              setSidebarActive("records");
+              setRecordsOpen(true);
+            }}
+            onWarrants={() => {
+              setSidebarActive("warrants");
+              openWarrantsBolos("warrants");
+            }}
+            onTrafficStop={() => {
+              setSidebarActive("traffic-stop");
+              setTrafficStopOpen(true);
+            }}
+            onNotepad={() => {
+              setSidebarActive("notepad");
+              setNotepadOpen(true);
+            }}
+            onCreateRecord={startRecord}
+            onOpenDraft={openDraft}
+            onOpenWarrantsBolosTab={(tab) => {
+              setSidebarActive("warrants");
+              openWarrantsBolos(tab);
+            }}
             accentVar={accentVar}
           />
 
+          <div className="w-[340px] shrink-0 border-r border-border-subtle bg-surface">
+            <CadHomePanel onEditCall={openCallDetail} accentVar={accentVar} />
+          </div>
+
           <div className="relative flex flex-1 flex-col overflow-hidden">
             <LiveMapView embedded accentVar={accentVar} />
-
-            {/* Active Call — top-right, floating over the map. Wrapper is a
-                bounded flex column so CallIntakeForm's own flex-1 + internal
-                overflow-y-auto actually get a height to work with, instead
-                of growing past max-h and having content silently clipped. */}
-            <div className="absolute right-4 top-4 z-10 flex max-h-[46vh] w-[380px] flex-col overflow-hidden rounded-xl border border-border-subtle bg-surface/95 shadow-2xl backdrop-blur">
-              <CallIntakeForm
-                key={viewedCall?.id ?? "new"}
-                initialCall={viewedCall}
-                canManage={canManage}
-                onJoined={() => setStatus("enroute")}
-                onSelfCleared={() => {
-                  setStatus("available");
-                  setAttachedCallId(null);
-                  setViewedCall(null);
-                }}
-                onCloseView={() => setViewedCall(null)}
-                accentVar={accentVar}
-              />
-            </div>
-
-            {/* Active Units / Squads — bottom-right, floating over the map. */}
-            <div className="absolute bottom-4 right-4 z-10 flex max-h-[42vh] w-[420px] flex-col overflow-y-auto rounded-xl border border-border-subtle bg-surface/95 shadow-2xl backdrop-blur">
-              <ActiveUnitsPanel accentVar={accentVar} />
-              <ActiveSquadsPanel />
-            </div>
+            <CadMapOverview />
           </div>
         </div>
       </div>
 
+      {viewedCall && (
+        <CallDetailWindow
+          call={viewedCall}
+          canManage={canManage}
+          onJoined={() => setStatus("enroute")}
+          onSelfCleared={() => {
+            setStatus("available");
+            setAttachedCallId(null);
+            setViewedCall(null);
+          }}
+          onClose={() => setViewedCall(null)}
+          accentVar={accentVar}
+        />
+      )}
       {lookupOpen && (
         <LookupWindow initialTab={lookupTab} onClose={() => setLookupOpen(false)} accentVar={accentVar} />
       )}

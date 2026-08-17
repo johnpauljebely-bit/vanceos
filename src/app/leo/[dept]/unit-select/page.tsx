@@ -70,7 +70,10 @@ export default async function UnitSelectPage({ params }: { params: Promise<{ dep
 
 function UnitSelectShell({ children, accentVar }: { children: React.ReactNode; accentVar: string }) {
   return (
-    <main className="relative flex flex-1 items-center justify-center overflow-hidden bg-bg p-8">
+    <main
+      className="relative flex flex-1 items-center justify-center overflow-hidden bg-bg p-8"
+      style={{ "--accent-focus": `var(${accentVar})` } as React.CSSProperties}
+    >
       <div
         className="pointer-events-none absolute inset-0 opacity-[0.12]"
         style={{ background: `radial-gradient(ellipse 80% 50% at 50% -10%, var(${accentVar}) 0%, transparent 60%)` }}

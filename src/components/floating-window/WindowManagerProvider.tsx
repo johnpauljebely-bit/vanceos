@@ -18,7 +18,18 @@ const WindowManagerContext = createContext<WindowManagerContextValue | null>(nul
  * state (minimized/fullscreen/pinned/locked/position) lives inside each
  * FloatingWindow itself — only stacking order is centralized here.
  */
-export function WindowManagerProvider({ children }: { children: React.ReactNode }) {
+export function WindowManagerProvider({
+  children,
+  accentVar,
+}: {
+  children: React.ReactNode;
+  /** CSS custom property name (e.g. "--accent-light-red") applied as
+   * --accent-focus on a `display: contents` wrapper — every FloatingWindow
+   * opened from this provider, and the portal's own inline content, live as
+   * siblings with no shared DOM ancestor otherwise, so this is the one
+   * place a portal-wide focus-ring color can actually reach both. */
+  accentVar?: string;
+}) {
   const [zIndices, setZIndices] = useState<Record<string, number>>({});
   const counter = useRef(10);
 
@@ -44,7 +55,9 @@ export function WindowManagerProvider({ children }: { children: React.ReactNode 
 
   return (
     <WindowManagerContext.Provider value={{ zIndexOf, focus, register, unregister }}>
-      {children}
+      <div className="contents" style={accentVar ? ({ "--accent-focus": `var(${accentVar})` } as React.CSSProperties) : undefined}>
+        {children}
+      </div>
     </WindowManagerContext.Provider>
   );
 }

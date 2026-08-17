@@ -145,7 +145,7 @@ export function WarrantsBolosWindow({
 
         {tab === "warrants" ? (
           <DataTable columns={["Subject", "Charges", "Signature", ""]} isEmpty={(warrantsData?.warrants ?? []).length === 0}>
-            {warrantsData?.warrants.map((w) => (
+            {(warrantsData?.warrants ?? []).map((w) => (
               <DataRow key={w.id}>
                 <DataCell>{w.subjectName}</DataCell>
                 <DataCell>{w.charges}</DataCell>
@@ -160,7 +160,7 @@ export function WarrantsBolosWindow({
           </DataTable>
         ) : (
           <DataTable columns={["Subject", "Description", "Type", ""]} isEmpty={(bolosData?.bolos ?? []).length === 0}>
-            {bolosData?.bolos.map((b) => (
+            {(bolosData?.bolos ?? []).map((b) => (
               <DataRow key={b.id}>
                 <DataCell>{b.subjectName ?? "---"}</DataCell>
                 <DataCell>{b.description}</DataCell>

@@ -23,12 +23,15 @@ export function NewRecordDropdown({
   onOpenWarrantsBolos,
   accent = "blue",
   accentClass = "text-accent-blue",
+  iconOnly = false,
 }: {
   onCreateNew: (type: RecordType) => void;
   onOpenDraft: (draft: DraftSummary) => void;
   onOpenWarrantsBolos: (tab: "warrants" | "bolos") => void;
   accent?: "blue" | "verify-green";
   accentClass?: string;
+  /** Renders as a bare rail-style icon button (small draft-count dot instead of a label) instead of a labeled toolbar button — for the sidebar rail. */
+  iconOnly?: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const [drafts, setDrafts] = useState<DraftSummary[]>([]);
@@ -47,18 +50,31 @@ export function NewRecordDropdown({
 
   return (
     <div className="relative">
-      <Button
-        variant="plain"
-        accent={accent}
-        icon={<FilePlus size={14} />}
-        onClick={() => setOpen((v) => !v)}
-      >
-        {drafts.length > 0 ? `Drafts (${drafts.length})` : "New Record"}
-      </Button>
+      {iconOnly ? (
+        <button
+          type="button"
+          onClick={() => setOpen((v) => !v)}
+          aria-label="New Record"
+          title="New Record"
+          className={cn(
+            "relative flex h-11 w-11 items-center justify-center rounded-xl text-fg-muted transition-colors hover:bg-white/5 hover:text-fg",
+            open && accentClass,
+          )}
+        >
+          <FilePlus size={18} />
+          {drafts.length > 0 && (
+            <span className={cn("absolute right-1.5 top-1.5 h-2 w-2 rounded-full", accent === "verify-green" ? "bg-accent-verify-green" : "bg-accent-blue")} />
+          )}
+        </button>
+      ) : (
+        <Button variant="plain" accent={accent} icon={<FilePlus size={14} />} onClick={() => setOpen((v) => !v)}>
+          {drafts.length > 0 ? `Drafts (${drafts.length})` : "New Record"}
+        </Button>
+      )}
       {open && (
         <>
           <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
-          <div className="absolute left-0 top-full z-50 mt-2 w-56 rounded-lg border border-border-subtle bg-surface py-1 shadow-2xl">
+          <div className={cn("absolute z-50 w-56 rounded-lg border border-border-subtle bg-surface py-1 shadow-2xl", iconOnly ? "left-full top-0 ml-2" : "left-0 top-full mt-2")}>
             {drafts.length > 0 && (
               <>
                 <div className="px-3 pt-2 pb-1 text-xs font-bold text-fg-muted">Drafts</div>

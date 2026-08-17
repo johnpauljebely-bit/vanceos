@@ -44,7 +44,7 @@ export function CivilianPanel({
   }
 
   return (
-    <WindowManagerProvider>
+    <WindowManagerProvider accentVar="--accent-light-red">
       <div className="relative flex flex-1 flex-col overflow-hidden bg-bg">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-10%,var(--accent-light-red)_0%,transparent_60%)] opacity-[0.12]" />
 
