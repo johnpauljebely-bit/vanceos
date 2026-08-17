@@ -10,12 +10,16 @@ import { playDispatchAlert } from "@/lib/dispatchAudio";
 import { useLiveQuery } from "@/lib/useLiveQuery";
 import { CadSidebar, type SidebarItemId } from "./CadSidebar";
 import { CadHomePanel } from "./CadHomePanel";
+import { CadSplitLayout } from "./CadSplitLayout";
+import { CadSettingsWindow } from "./CadSettingsWindow";
 import { CallDetailWindow } from "./CallDetailWindow";
 import type { CompactCall } from "./CallCard";
 import { LiveMapView } from "./LiveMapView";
 import { CadMapOverview } from "./CadMapOverview";
 import { LookupWindow } from "./lookup/LookupWindow";
+import { LookupContent } from "./lookup/LookupContent";
 import { CallsBoardWindow, type BoardCall } from "./CallsBoardWindow";
+import { CallsBoardContent } from "./CallsBoardContent";
 import { WarrantsBolosWindow } from "./WarrantsBolosWindow";
 import { RecordsWindow } from "./RecordsWindow";
 import { RecordFormWindow, type RecordType } from "./RecordFormWindow";
@@ -25,6 +29,12 @@ import { NotepadWindow } from "./NotepadWindow";
 import type { QuickAction } from "./QuickActionSearchBar";
 import type { UnitStatus } from "@/lib/unitStatus";
 import { accentVarForDepartment, accentTextClassForDepartment } from "@/lib/departmentAccent";
+import { loadLayoutMode, saveLayoutMode, type LayoutMode } from "@/lib/layoutMode";
+
+// Splitscreen currently only has adapted content for these two tabs — see
+// CadSettingsWindow's own note. Everything else still opens as a window
+// even when layoutMode is "split".
+const SPLIT_ADAPTED_TABS: SidebarItemId[] = ["search", "call-lookup"];
 
 interface ActiveCall {
   id: string;
@@ -63,6 +73,16 @@ export function CadPanel({
   const [selfDispatchState, setSelfDispatchState] = useState<SelfDispatchState>("off");
   const [selfDispatchError, setSelfDispatchError] = useState<string | null>(null);
   const [sidebarActive, setSidebarActive] = useState<SidebarItemId>("home");
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  // Lazy initializer (not useEffect+setState) so this reads correctly on
+  // first client render instead of flashing "windows" then jumping to the
+  // saved mode a tick later. loadLayoutMode() itself guards the SSR case.
+  const [layoutMode, setLayoutMode] = useState<LayoutMode>(() => loadLayoutMode());
+
+  function changeLayoutMode(mode: LayoutMode) {
+    setLayoutMode(mode);
+    saveLayoutMode(mode);
+  }
 
   // Entering the panel with a unit selected IS being on duty — Active Units
   // presence is independent of the 5-state status (an Unavailable/Busy unit
@@ -204,7 +224,7 @@ export function CadPanel({
       case "lookup":
         setSidebarActive("search");
         setLookupTab("name");
-        setLookupOpen(true);
+        if (layoutMode !== "split") setLookupOpen(true);
         break;
       case "records":
         setSidebarActive("records");
@@ -224,6 +244,12 @@ export function CadPanel({
   function openCallDetail(call: CompactCall) {
     setViewedCall({ id: call.id, title: call.title });
   }
+
+  // Only Search/Call Lookup have adapted splitscreen content today — every
+  // other sidebar tab still opens as a window even in split mode, so the
+  // panel only widens for the two that actually have somewhere to put the
+  // extra space (see SPLIT_ADAPTED_TABS / CadSettingsWindow's note).
+  const isWideSplit = layoutMode === "split" && SPLIT_ADAPTED_TABS.includes(sidebarActive);
 
   return (
     <WindowManagerProvider accentVar={accentVar}>
@@ -247,11 +273,11 @@ export function CadPanel({
             onSearch={() => {
               setSidebarActive("search");
               setLookupTab("name");
-              setLookupOpen(true);
+              if (layoutMode !== "split") setLookupOpen(true);
             }}
             onCallLookup={() => {
               setSidebarActive("call-lookup");
-              setCallsBoardOpen(true);
+              if (layoutMode !== "split") setCallsBoardOpen(true);
             }}
             onRecords={() => {
               setSidebarActive("records");
@@ -269,6 +295,10 @@ export function CadPanel({
               setSidebarActive("notepad");
               setNotepadOpen(true);
             }}
+            onSettings={() => {
+              setSidebarActive("settings");
+              setSettingsOpen(true);
+            }}
             onCreateRecord={startRecord}
             onOpenDraft={openDraft}
             onOpenWarrantsBolosTab={(tab) => {
@@ -278,14 +308,28 @@ export function CadPanel({
             accentVar={accentVar}
           />
 
-          <div className="w-[340px] shrink-0 border-r border-border-subtle bg-surface">
-            <CadHomePanel onEditCall={openCallDetail} accentVar={accentVar} />
-          </div>
-
-          <div className="relative flex flex-1 flex-col overflow-hidden">
-            <LiveMapView embedded accentVar={accentVar} />
-            <CadMapOverview />
-          </div>
+          <CadSplitLayout
+            wide={isWideSplit}
+            left={
+              isWideSplit && sidebarActive === "search" ? (
+                <div className="p-4">
+                  <LookupContent initialTab={lookupTab} accentVar={accentVar} expanded />
+                </div>
+              ) : isWideSplit && sidebarActive === "call-lookup" ? (
+                <div className="p-4">
+                  <CallsBoardContent onOpenCall={openCallFromBoard} onJoined={() => setStatus("enroute")} accentVar={accentVar} expanded />
+                </div>
+              ) : (
+                <CadHomePanel onEditCall={openCallDetail} accentVar={accentVar} />
+              )
+            }
+            right={
+              <>
+                <LiveMapView embedded accentVar={accentVar} />
+                <CadMapOverview />
+              </>
+            }
+          />
         </div>
       </div>
 
@@ -352,6 +396,14 @@ export function CadPanel({
       )}
       {trafficStopOpen && <TrafficStopWindow onClose={() => setTrafficStopOpen(false)} accentVar={accentVar} />}
       {notepadOpen && <NotepadWindow onClose={() => setNotepadOpen(false)} accentVar={accentVar} />}
+      {settingsOpen && (
+        <CadSettingsWindow
+          onClose={() => setSettingsOpen(false)}
+          layoutMode={layoutMode}
+          onLayoutModeChange={changeLayoutMode}
+          accentVar={accentVar}
+        />
+      )}
 
       <SelfDispatchApprovalPopup accentVar={accentVar} />
       <AudioGateOverlay accentVar={accentVar} />

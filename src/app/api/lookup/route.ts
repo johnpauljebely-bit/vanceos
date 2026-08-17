@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireApiSession } from "@/lib/session";
-import { lookupByName, lookupVehicleByPlate, lookupLicenceByHolderName } from "@/db/queries/lookup";
+import { lookupByName, lookupVehicleByPlate, lookupLicenceByHolderName, lookupPlayersByUsername } from "@/db/queries/lookup";
 
 export async function GET(request: NextRequest) {
   const { error } = await requireApiSession();
@@ -20,8 +20,19 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ implemented: true, results });
   }
 
+  if (tab === "roblox") {
+    const query = [
+      request.nextUrl.searchParams.get("username"),
+      request.nextUrl.searchParams.get("userId"),
+    ]
+      .filter(Boolean)
+      .join(" ");
+    const results = await lookupPlayersByUsername(query);
+    return NextResponse.json({ implemented: true, results });
+  }
+
   if (tab !== "name") {
-    // Identifier/Phone Number/Record ID/ROBLOX have no backing data source
+    // Identifier/Phone Number/Record ID have no backing data source
     // specified anywhere yet — see LookupWindow's inferred field lists.
     // Real UI, stubbed query.
     return NextResponse.json({ implemented: false, results: null });

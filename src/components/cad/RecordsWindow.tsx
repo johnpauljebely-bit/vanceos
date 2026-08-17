@@ -125,7 +125,7 @@ export function RecordsWindow({
         )}
 
         <DataTable columns={["Type", "Title", "Subject", "Status"]} isEmpty={(data?.records ?? []).length === 0}>
-          {data?.records.map((r) => (
+          {(data?.records ?? []).map((r) => (
             <DataRow key={r.id}>
               <DataCell className="capitalize">{r.recordType.replace("_", " ")}</DataCell>
               <DataCell>{r.title}</DataCell>

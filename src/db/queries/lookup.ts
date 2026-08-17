@@ -1,6 +1,7 @@
 import { ilike, or, eq } from "drizzle-orm";
 import { db } from "@/db";
-import { civilianProfiles, calls, citations, callsigns, vehicles, licences, characters } from "@/db/schema";
+import { civilianProfiles, calls, citations, callsigns, vehicles, licences, characters, links } from "@/db/schema";
+import { livePlayers } from "@/db/botOwnedTables";
 
 /**
  * Name tab: the only Lookup tab with a real backing query today. Unions
@@ -46,6 +47,40 @@ export async function lookupVehicleByPlate(plate: string) {
     .from(vehicles)
     .innerJoin(characters, eq(vehicles.characterId, characters.id))
     .where(ilike(vehicles.plate, `%${plate}%`));
+}
+
+const ONLINE_WINDOW_MS = 90_000;
+
+/**
+ * ROBLOX tab: every player who has ever linked their account (the `links`
+ * table — this is the "any player ever to exist on CAD" the user asked
+ * for, not just people currently in-game), left-joined against the bot's
+ * live_players cache so we can flag which of those matches are online
+ * right now.
+ */
+export async function lookupPlayersByUsername(query: string) {
+  if (!query.trim()) return [];
+  const like = `%${query}%`;
+
+  const rows = await db
+    .select({
+      discordId: links.discordId,
+      robloxUsername: links.robloxUsername,
+      robloxUserId: links.robloxUserId,
+      liveUpdatedAt: livePlayers.updatedAt,
+    })
+    .from(links)
+    .leftJoin(livePlayers, eq(links.robloxUsername, livePlayers.robloxUsername))
+    .where(or(ilike(links.robloxUsername, like), ilike(links.robloxUserId, like)))
+    .limit(50);
+
+  const now = Date.now();
+  return rows.map((r) => ({
+    discordId: r.discordId,
+    robloxUsername: r.robloxUsername,
+    robloxUserId: r.robloxUserId,
+    online: Boolean(r.liveUpdatedAt && now - new Date(r.liveUpdatedAt).getTime() < ONLINE_WINDOW_MS),
+  }));
 }
 
 export async function lookupLicenceByHolderName(name: string) {

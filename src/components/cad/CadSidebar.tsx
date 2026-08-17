@@ -25,8 +25,7 @@ export type SidebarItemId =
 /**
  * Left nav rail — everything that isn't a live status or genuinely urgent
  * (those stay in CadNavBar) lives here instead of scattered across two
- * toolbars. Settings is a placeholder for future window/tile customization,
- * not wired to anything real yet.
+ * toolbars.
  */
 export function CadSidebar({
   active = "home",
@@ -37,6 +36,7 @@ export function CadSidebar({
   onWarrants,
   onTrafficStop,
   onNotepad,
+  onSettings,
   onCreateRecord,
   onOpenDraft,
   onOpenWarrantsBolosTab,
@@ -50,6 +50,7 @@ export function CadSidebar({
   onWarrants: () => void;
   onTrafficStop: () => void;
   onNotepad: () => void;
+  onSettings: () => void;
   onCreateRecord: (type: RecordType) => void;
   onOpenDraft: (draft: DraftSummary) => void;
   onOpenWarrantsBolosTab: (tab: "warrants" | "bolos") => void;
@@ -68,7 +69,7 @@ export function CadSidebar({
     { id: "warrants", label: "Warrants & BOLOs", icon: <Gavel size={18} />, onClick: onWarrants },
     { id: "traffic-stop", label: "Traffic Stop", icon: <Car size={18} />, onClick: onTrafficStop },
     { id: "notepad", label: "Notepad", icon: <StickyNote size={18} />, onClick: onNotepad },
-    { id: "settings", label: "Settings", icon: <Settings size={18} />, disabled: true },
+    { id: "settings", label: "Settings", icon: <Settings size={18} />, onClick: onSettings },
   ];
 
   return (
