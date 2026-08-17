@@ -30,6 +30,15 @@
      don't remove teal until nothing references it anymore. */
   --accent-blue: #3355ff;
   --accent-blue-fg: #eef1ff;
+
+  /* Verification-specific accent per the user's explicit split: blue for
+     everything else in the revamp, green ONLY for verification/auth
+     moments (sign-in button, remember-me checkbox). Deliberately a
+     separate token from --accent-status-green (on-duty/available in the
+     old dashboard) even though the hue is similar — different concept,
+     don't conflate the two. */
+  --accent-verify-green: #22c55e;
+  --accent-verify-green-fg: #06210f;
 }
 
 @theme inline {
@@ -50,6 +59,8 @@
   --color-accent-red-fg: var(--accent-red-fg);
   --color-accent-blue: var(--accent-blue);
   --color-accent-blue-fg: var(--accent-blue-fg);
+  --color-accent-verify-green: var(--accent-verify-green);
+  --color-accent-verify-green-fg: var(--accent-verify-green-fg);
 
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);

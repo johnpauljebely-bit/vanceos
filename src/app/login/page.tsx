@@ -1,6 +1,7 @@
 import Image from "next/image";
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { auth, signIn, signOut } from "@/lib/auth";
+import { auth, signIn, signOut, REMEMBER_ME_COOKIE } from "@/lib/auth";
 import { Button } from "@/components/ui/Button";
 
 function DiscordMark({ size = 18 }: { size?: number }) {
@@ -30,22 +31,30 @@ export default async function LoginPage({
   const stale = Boolean(session) && !session?.user.discordId;
 
   return (
-    <main className="relative flex min-h-screen w-full items-center justify-end overflow-hidden bg-black p-6 sm:p-12">
-      <Image
-        src="/brand/login-bg.png"
-        alt=""
-        fill
-        priority
-        className="object-cover opacity-70"
-      />
-      {/* Left→right dark scrim: image stays legible on the left, text sits on solid dark on the right. */}
-      <div className="absolute inset-0 bg-gradient-to-r from-black/10 via-black/70 to-black" />
-      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/30" />
+    <main className="relative flex min-h-screen w-full items-center justify-end bg-black p-6 sm:p-12">
+      {/* Background layer isolated in its own overflow-hidden box so the
+          `fill` image never forces a scrollbar — page content (below)
+          stays free to scroll on short viewports instead of being clipped. */}
+      <div className="absolute inset-0 overflow-hidden">
+        <Image
+          src="/brand/login-bg.png"
+          alt=""
+          fill
+          priority
+          className="object-cover opacity-70"
+        />
+        {/* Left→right dark scrim: image stays legible on the left, text sits on solid dark on the right. */}
+        <div className="absolute inset-0 bg-gradient-to-r from-black/10 via-black/70 to-black" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/30" />
+      </div>
 
-      <div className="relative z-10 flex w-full max-w-md flex-col items-center gap-8 text-center sm:items-end sm:text-right">
+      {/* This block itself stays positioned on the right side of the page
+          (outer justify-end above) — everything WITHIN it is centered
+          relative to each other, not edge-aligned. */}
+      <div className="relative z-10 flex w-full max-w-md flex-col items-center gap-8 text-center">
         <Image src="/brand/logo-white.png" alt="Triton CAD" width={56} height={56} className="opacity-90" />
 
-        <div className="flex flex-col items-center gap-3 sm:items-end">
+        <div className="flex flex-col items-center gap-3">
           <h1 className="text-4xl font-extrabold tracking-tight text-white">Log in to Triton CAD</h1>
           <p className="max-w-sm text-sm text-white/60">
             Use Discord to sign in. Access is secured and permission-gated for you and your team.
@@ -53,7 +62,7 @@ export default async function LoginPage({
         </div>
 
         {stale ? (
-          <div className="flex w-full flex-col items-center gap-3 rounded-2xl border border-white/10 bg-white/5 p-6 text-center backdrop-blur-sm sm:items-end sm:text-right">
+          <div className="flex w-full flex-col items-center gap-3 rounded-2xl border border-white/10 bg-white/5 p-6 text-center backdrop-blur-sm">
             <p className="max-w-sm text-sm text-white/60">
               Your session is stale and needs to be refreshed. Sign out, then sign back in.
             </p>
@@ -70,19 +79,62 @@ export default async function LoginPage({
           </div>
         ) : (
           <form
-            action={async () => {
+            action={async (formData: FormData) => {
               "use server";
+              const remember = formData.get("remember") === "on";
+              const store = await cookies();
+              // Only needs to survive the OAuth redirect round-trip — read
+              // once in auth.ts's jwt callback, then left to expire itself.
+              store.set(REMEMBER_ME_COOKIE, remember ? "1" : "0", {
+                httpOnly: true,
+                sameSite: "lax",
+                path: "/",
+                maxAge: 300,
+              });
               await signIn("discord", { redirectTo: "/team-select" });
             }}
-            className="w-full"
+            className="flex w-full flex-col items-center gap-4"
           >
+            <label className="flex w-full cursor-pointer items-start gap-3 rounded-xl border border-white/10 bg-white/5 p-4 text-left transition-colors hover:bg-white/[0.07]">
+              {/* input/box/checkmark must all be true siblings — peer-checked
+                  can't reach into a descendant of a later sibling, which was
+                  the bug: the checkmark svg was nested inside the box span. */}
+              <span className="relative mt-0.5 h-5 w-5 shrink-0">
+                <input
+                  type="checkbox"
+                  name="remember"
+                  className="peer absolute inset-0 z-10 h-5 w-5 cursor-pointer opacity-0"
+                />
+                <span className="pointer-events-none absolute inset-0 rounded-md border border-white/25 bg-white/5 peer-checked:border-accent-verify-green peer-checked:bg-accent-verify-green" />
+                <svg
+                  viewBox="0 0 16 16"
+                  className="pointer-events-none absolute inset-0 m-auto hidden h-3 w-3 text-accent-verify-green-fg peer-checked:block"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth={2.5}
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M3 8l3.5 3.5L13 5" />
+                </svg>
+              </span>
+              <span>
+                <span className="block text-sm font-semibold text-white">Keep me signed in</span>
+                <span className="block text-xs text-white/50">Stay signed in on this device for 7 days.</span>
+              </span>
+            </label>
+
             <button
               type="submit"
-              className="flex w-full items-center justify-center gap-2.5 rounded-xl bg-accent-blue px-6 py-3.5 text-base font-bold text-accent-blue-fg shadow-[0_0_0_1px_rgba(255,255,255,0.08)] transition-transform hover:scale-[1.01] active:scale-[0.99]"
+              className="flex w-full items-center justify-center gap-2.5 rounded-xl bg-accent-verify-green px-6 py-3.5 text-base font-bold text-accent-verify-green-fg shadow-[0_0_0_1px_rgba(255,255,255,0.08)] transition-transform hover:scale-[1.01] active:scale-[0.99]"
             >
               <DiscordMark />
               Continue with Discord
             </button>
+
+            <p className="max-w-sm text-xs text-white/40">
+              By signing in, you agree to the Terms of Service and Privacy Policy.
+            </p>
           </form>
         )}
       </div>
