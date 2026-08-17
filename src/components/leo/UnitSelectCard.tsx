@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Lock, Plus, Check } from "lucide-react";
+import Image from "next/image";
+import { Lock, Plus, Check, ShieldCheck } from "lucide-react";
 import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/Label";
 import { Button } from "@/components/ui/Button";
@@ -37,10 +38,11 @@ function accentFor(department: string): "blue" | "verify-green" {
 
 export function UnitSelectCard({ department, callsigns }: { department: string; callsigns: CallsignRow[] }) {
   const accent = accentFor(department);
+  const accentVar = accent === "verify-green" ? "--accent-verify-green" : "--accent-blue";
   const selectedClasses =
     accent === "verify-green"
-      ? "border-accent-verify-green text-accent-verify-green"
-      : "border-accent-blue text-accent-blue";
+      ? "border-accent-verify-green bg-accent-verify-green/10 text-accent-verify-green"
+      : "border-accent-blue bg-accent-blue/10 text-accent-blue";
   const linkClass = accent === "verify-green" ? "text-accent-verify-green" : "text-accent-blue";
   const [selected, setSelected] = useState<CallsignRow | null>(callsigns[0] ?? null);
   const [profiles, setProfiles] = useState<UnitProfile[] | null>(null);
@@ -128,10 +130,31 @@ export function UnitSelectCard({ department, callsigns }: { department: string; 
   const canEnter = showNewForm ? rpName.trim().length > 0 : Boolean(selectedProfile);
 
   return (
-    <div className="mx-auto flex max-w-lg flex-col gap-6 rounded-2xl border border-border-subtle bg-surface p-6">
-      <h1 className="text-xl font-bold text-fg">{DEPT_LABEL[department] ?? department} — Select Unit</h1>
+    <div className="relative mx-auto flex max-w-lg flex-col gap-6 overflow-hidden rounded-3xl border border-border-subtle bg-surface p-8">
+      <div
+        className="pointer-events-none absolute inset-0 opacity-[0.1]"
+        style={{ background: `radial-gradient(ellipse 100% 60% at 50% -10%, var(${accentVar}) 0%, transparent 65%)` }}
+      />
 
-      <div className="flex flex-col gap-2">
+      <div className="relative z-10 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <span
+            className={cn(
+              "flex h-11 w-11 items-center justify-center rounded-2xl",
+              accent === "verify-green" ? "bg-accent-verify-green/15 text-accent-verify-green" : "bg-accent-blue/15 text-accent-blue",
+            )}
+          >
+            <ShieldCheck size={22} />
+          </span>
+          <div>
+            <h1 className="text-xl font-extrabold tracking-tight text-fg">{DEPT_LABEL[department] ?? department}</h1>
+            <p className="text-xs font-light uppercase tracking-widest text-fg-muted">Select Unit</p>
+          </div>
+        </div>
+        <Image src="/brand/logo-white.png" alt="" width={28} height={28} className="opacity-80" />
+      </div>
+
+      <div className="relative z-10 flex flex-col gap-2">
         {callsigns.map((c) => {
           const key = `${c.department}-${c.number}`;
           const isSelected = selected?.number === c.number;
@@ -141,8 +164,10 @@ export function UnitSelectCard({ department, callsigns }: { department: string; 
               type="button"
               onClick={() => setSelected(c)}
               className={cn(
-                "flex items-center justify-between rounded-lg border px-4 py-3 text-left",
-                isSelected ? selectedClasses : "border-border-subtle text-fg hover:border-fg-muted",
+                "flex items-center justify-between rounded-xl border px-4 py-3 text-left transition-all duration-150",
+                isSelected
+                  ? cn(selectedClasses, "scale-[1.01]")
+                  : "border-border-subtle text-fg hover:border-fg-muted hover:bg-white/5",
               )}
             >
               <span className="inline-flex items-center gap-2 font-semibold">
@@ -156,9 +181,9 @@ export function UnitSelectCard({ department, callsigns }: { department: string; 
       </div>
 
       {profiles === null ? (
-        <p className="text-sm text-fg-muted">Loading your saved units...</p>
+        <p className="relative z-10 text-sm text-fg-muted">Loading your saved units...</p>
       ) : !showNewForm ? (
-        <div className="flex flex-col gap-3">
+        <div className="relative z-10 flex flex-col gap-3">
           <Label>Your Units</Label>
           <div className="flex flex-col gap-2">
             {profiles.map((p) => (
@@ -193,7 +218,7 @@ export function UnitSelectCard({ department, callsigns }: { department: string; 
           </Button>
         </div>
       ) : (
-        <div className="flex flex-col gap-4">
+        <div className="relative z-10 flex flex-col gap-4">
           <div className="flex items-center justify-between">
             <Label required>RP Name</Label>
             {profiles.length > 0 && (
@@ -244,7 +269,7 @@ export function UnitSelectCard({ department, callsigns }: { department: string; 
         accent={accent}
         disabled={!selected || !canEnter || entering}
         onClick={enterCad}
-        className="justify-center py-3 text-base"
+        className="relative z-10 justify-center py-3 text-base transition-transform hover:scale-[1.01] active:scale-[0.99]"
       >
         {entering ? "Entering..." : "Enter CAD"}
       </Button>

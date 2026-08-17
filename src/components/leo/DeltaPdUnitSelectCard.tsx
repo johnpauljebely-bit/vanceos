@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { CheckCircle2, Plus, Check } from "lucide-react";
+import Image from "next/image";
+import { CheckCircle2, Plus, Check, ShieldCheck } from "lucide-react";
 import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/Label";
 import { Button } from "@/components/ui/Button";
@@ -105,28 +106,42 @@ export function DeltaPdUnitSelectCard() {
   }
 
   return (
-    <div className="mx-auto flex max-w-lg flex-col gap-6 rounded-2xl border border-border-subtle bg-surface p-6">
-      <div>
-        <h1 className="text-xl font-bold text-fg">Delta Police — Select Unit</h1>
-        <p className="mt-1 text-sm text-fg-muted">
-          Delta PD callsigns are based on your live in-game callsign only — nothing to type here.
-        </p>
+    <div className="relative mx-auto flex max-w-lg flex-col gap-6 overflow-hidden rounded-3xl border border-border-subtle bg-surface p-8">
+      <div
+        className="pointer-events-none absolute inset-0 opacity-[0.1]"
+        style={{ background: "radial-gradient(ellipse 100% 60% at 50% -10%, var(--accent-blue) 0%, transparent 65%)" }}
+      />
+
+      <div className="relative z-10 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-accent-blue/15 text-accent-blue">
+            <ShieldCheck size={22} />
+          </span>
+          <div>
+            <h1 className="text-xl font-extrabold tracking-tight text-fg">Delta Police</h1>
+            <p className="text-xs font-light uppercase tracking-widest text-fg-muted">Select Unit</p>
+          </div>
+        </div>
+        <Image src="/brand/logo-white.png" alt="" width={28} height={28} className="opacity-80" />
       </div>
+      <p className="relative z-10 -mt-4 text-sm text-fg-muted">
+        Delta PD callsigns are based on your live in-game callsign only — nothing to type here.
+      </p>
 
       {loading ? (
-        <p className="text-sm text-fg-muted">Checking your live in-game status...</p>
+        <p className="relative z-10 text-sm text-fg-muted">Checking your live in-game status...</p>
       ) : !liveCallsign?.online ? (
-        <div className="rounded-lg border border-border-subtle bg-bg p-4 text-sm text-fg-muted">
+        <div className="relative z-10 rounded-lg border border-border-subtle bg-bg p-4 text-sm text-fg-muted">
           You need to be online in ER:LC with your Delta PD callsign set before you can onboard here.
           Join the server, set your callsign ({MIN}–{MAX}), then come back and refresh this page.
         </div>
       ) : !inRange ? (
-        <div className="rounded-lg border border-accent-red bg-bg p-4 text-sm text-accent-red">
+        <div className="relative z-10 rounded-lg border border-accent-red bg-bg p-4 text-sm text-accent-red">
           Your live in-game callsign ({liveCallsign.callsign}) isn&apos;t a valid Delta PD number ({MIN}–{MAX}).
           Fix it in-game, then refresh this page.
         </div>
       ) : (
-        <div className="rounded-lg border border-accent-status-green bg-bg p-4">
+        <div className="relative z-10 rounded-lg border border-accent-status-green bg-bg p-4">
           <Label>Callsign (from your live in-game status)</Label>
           <div className="mt-1 flex items-center gap-2">
             <Input value={number ?? ""} readOnly disabled className="flex-1" />
@@ -136,9 +151,9 @@ export function DeltaPdUnitSelectCard() {
       )}
 
       {profiles === null ? (
-        <p className="text-sm text-fg-muted">Loading your saved units...</p>
+        <p className="relative z-10 text-sm text-fg-muted">Loading your saved units...</p>
       ) : !showNewForm ? (
-        <div className="flex flex-col gap-3">
+        <div className="relative z-10 flex flex-col gap-3">
           <Label>Your Units</Label>
           <div className="flex flex-col gap-2">
             {profiles.map((p) => (
@@ -170,7 +185,7 @@ export function DeltaPdUnitSelectCard() {
           </Button>
         </div>
       ) : (
-        <div>
+        <div className="relative z-10">
           <div className="flex items-center justify-between">
             <Label required>RP Name</Label>
             {profiles.length > 0 && (
@@ -192,14 +207,14 @@ export function DeltaPdUnitSelectCard() {
         </div>
       )}
 
-      {error && <p className="text-sm text-accent-red">{error}</p>}
+      {error && <p className="relative z-10 text-sm text-accent-red">{error}</p>}
 
       <Button
         variant="boxed"
         accent="blue"
         disabled={!inRange || !activeRpName.trim() || entering}
         onClick={enterCad}
-        className="justify-center py-3 text-base"
+        className="relative z-10 justify-center py-3 text-base transition-transform hover:scale-[1.01] active:scale-[0.99]"
       >
         {entering ? "Entering..." : "Enter CAD"}
       </Button>
