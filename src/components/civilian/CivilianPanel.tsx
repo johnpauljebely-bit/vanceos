@@ -12,7 +12,6 @@ import { VehicleRegistrationWindow } from "./VehicleRegistrationWindow";
 import { DriversLicenceWindow } from "./DriversLicenceWindow";
 import type { CivilianRecordType } from "./CivilianNewRecordDropdown";
 import { Select } from "@/components/ui/Select";
-import { Label } from "@/components/ui/Label";
 
 export function CivilianPanel({
   initialCharacters,
@@ -46,7 +45,9 @@ export function CivilianPanel({
 
   return (
     <WindowManagerProvider>
-      <div className="flex flex-1 flex-col">
+      <div className="relative flex flex-1 flex-col overflow-hidden bg-bg">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-10%,var(--accent-light-red)_0%,transparent_60%)] opacity-[0.12]" />
+
         <CivilianTopToolbar
           onManageCharacters={() => setManageOpen(true)}
           onMyRecords={() => setCitationsOpen(true)}
@@ -55,21 +56,22 @@ export function CivilianPanel({
           on311={() => setThreeOneOneOpen(true)}
         />
 
-        <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 p-8">
-          <div className="rounded-2xl border border-border-subtle bg-surface p-4">
-            <Label>Select Character</Label>
-            <Select
-              value={selectedId ?? ""}
-              onChange={(e) => setSelectedId(Number(e.target.value))}
-              className="mt-1"
-            >
-              {characters.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.firstName} {c.lastName} ({c.dateOfBirth})
-                </option>
-              ))}
-            </Select>
-          </div>
+        <div className="relative z-10 mx-auto flex w-full max-w-3xl flex-1 flex-col gap-4 p-6 sm:p-10">
+          {characters.length > 1 && (
+            <div className="w-auto self-start">
+              <Select
+                value={selectedId ?? ""}
+                onChange={(e) => setSelectedId(Number(e.target.value))}
+                className="w-auto"
+              >
+                {characters.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.firstName} {c.lastName} ({c.dateOfBirth})
+                  </option>
+                ))}
+              </Select>
+            </div>
+          )}
 
           {selected && (
             <CivilianCharacterCard

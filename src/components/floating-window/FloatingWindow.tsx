@@ -10,14 +10,20 @@ export function FloatingWindow({
   onClose,
   initial = { x: 160, y: 120 },
   width = 720,
+  accentVar = "--accent-teal",
   children,
 }: {
   title: string;
   onClose: () => void;
   initial?: { x: number; y: number };
   width?: number;
+  /** CSS custom property name tinting pin/lock active state — lets each
+   * department/portal (civilian=red, police=blue, ...) keep its own accent
+   * on a shared window chrome instead of every window looking identical. */
+  accentVar?: string;
   children: React.ReactNode;
 }) {
+  const accent = `var(${accentVar})`;
   const id = useId();
   const { zIndexOf, focus, register, unregister } = useWindowManager();
 
@@ -72,7 +78,7 @@ export function FloatingWindow({
         aria-label={title}
         onPointerDown={() => focus(id)}
         className={cn(
-          "fixed rounded-xl border border-border-subtle bg-surface shadow-2xl",
+          "fixed overflow-hidden rounded-xl border border-border-subtle bg-surface shadow-2xl",
           fullscreen && "inset-6",
         )}
         style={
@@ -81,18 +87,20 @@ export function FloatingWindow({
             : { left: pos.x, top: pos.y, width, zIndex: zIndexOf(id) }
         }
       >
+        <div className="h-[2px] w-full" style={{ background: accent }} />
         <div
           onPointerDown={onTitlePointerDown}
           onPointerMove={onTitlePointerMove}
           onPointerUp={onTitlePointerUp}
-          className="flex cursor-move items-center justify-between rounded-t-xl border-b border-border-subtle bg-surface-input px-4 py-2 select-none"
+          className="flex cursor-move items-center justify-between border-b border-border-subtle bg-surface-input px-4 py-2 select-none"
         >
           <div className="flex items-center gap-2">
             <button
               type="button"
               onPointerDown={(e) => e.stopPropagation()}
               onClick={() => setPinned((p) => !p)}
-              className={cn("text-fg-muted hover:text-fg", pinned && "text-accent-teal")}
+              className="text-fg-muted hover:text-fg"
+              style={pinned ? { color: accent } : undefined}
               aria-label="Pin window"
               title="Pin (prevents auto-close)"
             >
@@ -125,7 +133,8 @@ export function FloatingWindow({
               type="button"
               onPointerDown={(e) => e.stopPropagation()}
               onClick={() => setLocked((l) => !l)}
-              className={cn("text-fg-muted hover:text-fg", locked && "text-accent-teal")}
+              className="text-fg-muted hover:text-fg"
+              style={locked ? { color: accent } : undefined}
               aria-label="Lock position"
               title="Lock position"
             >

@@ -46,7 +46,7 @@ export function VehicleRegistrationWindow({
   }
 
   return (
-    <FloatingWindow title="New: Vehicle Registration" onClose={onClose} width={780}>
+    <FloatingWindow title="New: Vehicle Registration" onClose={onClose} width={780} accentVar="--accent-light-red">
       <div className="flex flex-col gap-6">
         <section className="rounded-xl border border-border-subtle p-4">
           <div className="mb-3 flex items-center gap-3">

@@ -68,7 +68,7 @@ export function CivilianCharacterEditWindow({
   }
 
   return (
-    <FloatingWindow title={`Civilian Character #${String(character.id).padStart(6, "0")}`} onClose={onClose} width={860}>
+    <FloatingWindow title={`Civilian Character #${String(character.id).padStart(6, "0")}`} onClose={onClose} width={860} accentVar="--accent-light-red">
       <div className="flex flex-col gap-6">
         <section className="rounded-xl border border-border-subtle p-4 text-center">
           <h3 className="mb-4 text-left text-lg font-bold text-fg">Identity</h3>

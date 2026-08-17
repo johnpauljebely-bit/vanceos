@@ -36,7 +36,7 @@ export function CitationsWindow({ onClose }: { onClose: () => void }) {
   }
 
   return (
-    <FloatingWindow title="Citations" onClose={onClose} width={620}>
+    <FloatingWindow title="Citations" onClose={onClose} width={620} accentVar="--accent-light-red">
       <DataTable columns={["Offense", "Amount", "Status", ""]} isEmpty={!items || items.length === 0}>
         {items?.map((c) => (
           <DataRow key={c.id}>

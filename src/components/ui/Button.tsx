@@ -1,7 +1,7 @@
 import { forwardRef } from "react";
 import { cn } from "@/lib/cn";
 
-type Accent = "teal" | "status-green" | "red" | "neutral";
+type Accent = "teal" | "status-green" | "red" | "neutral" | "light-red" | "blue" | "verify-green";
 type Variant = "boxed" | "plain";
 
 const accentText: Record<Accent, string> = {
@@ -9,6 +9,9 @@ const accentText: Record<Accent, string> = {
   "status-green": "text-accent-status-green",
   red: "text-accent-red",
   neutral: "text-fg",
+  "light-red": "text-accent-light-red",
+  blue: "text-accent-blue",
+  "verify-green": "text-accent-verify-green",
 };
 
 const accentBorder: Record<Accent, string> = {
@@ -16,6 +19,9 @@ const accentBorder: Record<Accent, string> = {
   "status-green": "border-accent-status-green",
   red: "border-accent-red",
   neutral: "border-border-subtle",
+  "light-red": "border-accent-light-red",
+  blue: "border-accent-blue",
+  "verify-green": "border-accent-verify-green",
 };
 
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {

@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { Users, Search, Phone, ChevronDown } from "lucide-react";
+import { ChevronLeft, Users, Search, Phone } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { CivilianNewRecordDropdown, type CivilianRecordType } from "./CivilianNewRecordDropdown";
 
@@ -21,29 +21,52 @@ export function CivilianTopToolbar({
   const router = useRouter();
 
   return (
-    <div className="flex items-center gap-4 border-b border-border-subtle bg-surface px-4 py-3">
-      <Button variant="boxed" accent="teal" icon={<Users size={14} />} onClick={onManageCharacters}>
-        Manage Characters
-      </Button>
-      <Button variant="boxed" accent="neutral" icon={<Search size={14} />} onClick={onMyRecords}>
-        My Records
-      </Button>
-      <CivilianNewRecordDropdown onSelect={onNewRecord} />
-
+    <div className="relative z-20 flex items-center gap-4 border-b border-border-subtle bg-surface/80 px-5 py-3 backdrop-blur">
       <button
         type="button"
         onClick={() => router.push("/team-select")}
-        className="mx-auto flex items-center gap-1 text-sm font-bold text-fg hover:text-accent-teal"
+        className="flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-sm font-bold text-fg transition-colors hover:bg-white/5 hover:text-accent-light-red"
       >
-        Civilian <ChevronDown size={14} />
+        <ChevronLeft size={16} />
+        Civilian
       </button>
 
-      <div className="ml-auto flex items-center gap-3">
-        <Button variant="boxed" accent="red" icon={<Phone size={14} />} onClick={on911}>
-          911
+      <div className="h-5 w-px bg-border-subtle" />
+
+      <div className="flex items-center gap-2">
+        <Button
+          variant="plain"
+          accent="neutral"
+          icon={<Users size={14} />}
+          onClick={onManageCharacters}
+          className="rounded-lg px-2.5 py-1.5 hover:bg-white/5"
+        >
+          Manage Characters
         </Button>
-        <Button variant="boxed" accent="status-green" icon={<Phone size={14} />} onClick={on311}>
+        <Button
+          variant="plain"
+          accent="neutral"
+          icon={<Search size={14} />}
+          onClick={onMyRecords}
+          className="rounded-lg px-2.5 py-1.5 hover:bg-white/5"
+        >
+          My Records
+        </Button>
+        <CivilianNewRecordDropdown onSelect={onNewRecord} />
+      </div>
+
+      <div className="ml-auto flex items-center gap-3">
+        <Button
+          variant="plain"
+          accent="neutral"
+          icon={<Phone size={14} />}
+          onClick={on311}
+          className="rounded-lg px-2.5 py-1.5 hover:bg-white/5"
+        >
           311
+        </Button>
+        <Button variant="boxed" accent="light-red" icon={<Phone size={14} />} onClick={on911}>
+          911
         </Button>
       </div>
     </div>

@@ -37,7 +37,7 @@ export function DriversLicenceWindow({
   }
 
   return (
-    <FloatingWindow title="New: Drivers Licence" onClose={onClose} width={780}>
+    <FloatingWindow title="New: Drivers Licence" onClose={onClose} width={780} accentVar="--accent-light-red">
       <div className="flex flex-col gap-6">
         <section className="rounded-xl border border-border-subtle p-4 text-center">
           <h3 className="mb-4 text-left text-lg font-bold text-fg">Photo</h3>

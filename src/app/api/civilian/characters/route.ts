@@ -15,7 +15,19 @@ export async function GET() {
 const characterSchema = z.object({
   firstName: z.string().min(1).max(60),
   lastName: z.string().min(1).max(60),
-  dateOfBirth: z.string().min(1),
+  dateOfBirth: z
+    .string()
+    .min(1)
+    .refine(
+      (val) => {
+        const dob = new Date(val);
+        if (Number.isNaN(dob.getTime())) return false;
+        const cutoff = new Date();
+        cutoff.setFullYear(cutoff.getFullYear() - 13);
+        return dob <= cutoff;
+      },
+      { message: "Character must be at least 13 years old" },
+    ),
   sex: z.enum(["Male", "Female"]).optional(),
   address: z.string().max(200).optional(),
   phoneNumber: z.string().max(30).optional(),

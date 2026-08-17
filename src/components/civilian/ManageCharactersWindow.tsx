@@ -30,6 +30,15 @@ export function ManageCharactersWindow({
   const [lastName, setLastName] = useState("");
   const [dateOfBirth, setDateOfBirth] = useState("");
   const [saving, setSaving] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
+
+  // Characters must be 13+ — also enforced server-side, this just keeps the
+  // date picker from offering invalid dates in the first place.
+  const maxDob = (() => {
+    const d = new Date();
+    d.setFullYear(d.getFullYear() - 13);
+    return d.toISOString().slice(0, 10);
+  })();
 
   function refresh() {
     fetch("/api/civilian/characters")
@@ -42,6 +51,7 @@ export function ManageCharactersWindow({
   async function addCharacter(e: React.FormEvent) {
     e.preventDefault();
     setSaving(true);
+    setFormError(null);
     const res = await fetch("/api/civilian/characters", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -55,12 +65,16 @@ export function ManageCharactersWindow({
       setShowForm(false);
       refresh();
       onSelect(character.id);
+    } else {
+      const body = await res.json().catch(() => null);
+      const fieldError = body?.details?.fieldErrors?.dateOfBirth?.[0];
+      setFormError(fieldError ?? "Couldn't save that character — check the fields and try again.");
     }
     setSaving(false);
   }
 
   return (
-    <FloatingWindow title="Manage Characters" onClose={onClose} width={720}>
+    <FloatingWindow title="Manage Characters" onClose={onClose} width={720} accentVar="--accent-light-red">
       <div className="flex flex-col gap-4">
         <div className="text-center">
           <h2 className="text-xl font-bold text-fg">Manage Characters</h2>
@@ -79,8 +93,16 @@ export function ManageCharactersWindow({
             </div>
             <div>
               <Label required>Date of Birth</Label>
-              <Input type="date" value={dateOfBirth} onChange={(e) => setDateOfBirth(e.target.value)} required className="mt-1" />
+              <Input
+                type="date"
+                value={dateOfBirth}
+                onChange={(e) => setDateOfBirth(e.target.value)}
+                max={maxDob}
+                required
+                className="mt-1"
+              />
             </div>
+            {formError && <p className="text-xs text-accent-red sm:col-span-3">{formError}</p>}
             <Button type="submit" variant="boxed" accent="teal" disabled={saving} className="self-start sm:col-span-3">
               {saving ? "Saving..." : "Save"}
             </Button>
