@@ -144,7 +144,7 @@ export function CallIntakeForm({
         <h2 className="text-lg font-bold text-fg">{call?.title || "No Active Call"}</h2>
         <div className="flex items-center gap-3">
           {call && !canManage && (
-            <Button variant="plain" accent="teal" onClick={joinCall} disabled={joining} icon={<LogIn size={14} />}>
+            <Button variant="plain" accent="blue" onClick={joinCall} disabled={joining} icon={<LogIn size={14} />}>
               {joining ? "Joining..." : "Join"}
             </Button>
           )}
@@ -153,7 +153,7 @@ export function CallIntakeForm({
           </Button>
           <Button
             variant="plain"
-            accent="teal"
+            accent="blue"
             icon={<Settings size={14} />}
             disabled={!call || broadcasting}
             onClick={broadcastUpdate}
@@ -273,10 +273,10 @@ export function CallIntakeForm({
             <Label>Address</Label>
             <div className="mt-1 flex items-center gap-2">
               <Input value={address} onChange={(e) => setAddress(e.target.value)} className="flex-1" />
-              <button type="button" className="text-fg-muted hover:text-accent-teal" aria-label="Location">
+              <button type="button" className="text-fg-muted hover:text-accent-blue" aria-label="Location">
                 <MapPin size={18} />
               </button>
-              <button type="button" className="text-fg-muted hover:text-accent-teal" aria-label="Notes">
+              <button type="button" className="text-fg-muted hover:text-accent-blue" aria-label="Notes">
                 <FileText size={18} />
               </button>
             </div>
@@ -288,7 +288,7 @@ export function CallIntakeForm({
           </div>
 
           {canManage && (
-            <Button type="submit" variant="boxed" accent="teal" disabled={submitting || !title.trim()} className="self-start">
+            <Button type="submit" variant="boxed" accent="blue" disabled={submitting || !title.trim()} className="self-start">
               {submitting ? "Saving..." : call ? "Update Call" : "Create Call"}
             </Button>
           )}
@@ -321,7 +321,7 @@ export function CallIntakeForm({
             type="button"
             onClick={submitNote}
             disabled={!call || !noteText.trim()}
-            className="text-accent-teal disabled:opacity-40"
+            className="text-accent-blue disabled:opacity-40"
             aria-label="Send note"
           >
             <Send size={18} />

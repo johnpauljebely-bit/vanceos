@@ -47,7 +47,7 @@ export function CitationsWindow({ onClose }: { onClose: () => void }) {
               {c.status === "unpaid" && (
                 <Button
                   variant="boxed"
-                  accent="teal"
+                  accent="blue"
                   onClick={() => pay(c.id)}
                   disabled={payingId === c.id}
                   className="px-3 py-1 text-xs"

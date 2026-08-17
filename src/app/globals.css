@@ -10,13 +10,8 @@
   --fg-muted: #8a8f98;
   --fg-disabled: #55575c;
 
-  /* Primary action color — toolbar buttons, Search, Automations, send icons,
-     active Home tab, active Lookup tab. Never reused for on-duty or danger. */
-  --accent-teal: #2dd4bf;
-  --accent-teal-fg: #06201c;
-
   /* On-duty / available state ONLY — Available toggle, Radio border, unit
-     badge pill background. A different shade than teal, never interchanged. */
+     badge pill background. Never reused for the primary action color. */
   --accent-status-green: #22c55e;
   --accent-status-green-fg: #06210f;
 
@@ -24,10 +19,9 @@
   --accent-red: #ef4444;
   --accent-red-fg: #2a0808;
 
-  /* UI revamp (2026-08-16): cobalt/royal blue is the new primary accent for
-     sign-in, team-select, and the dashboard as each gets rebuilt. Coexists
-     with --accent-teal (the old primary) until every surface is migrated —
-     don't remove teal until nothing references it anymore. */
+  /* Primary action color app-wide (buttons, links, focus rings) — cobalt/
+     royal blue. Replaced the old turquoise/teal primary (2026-08-16, "banish
+     turquoise") everywhere; that token is gone, not just unused. */
   --accent-blue: #3355ff;
   --accent-blue-fg: #eef1ff;
 
@@ -57,8 +51,6 @@
   --color-fg-muted: var(--fg-muted);
   --color-fg-disabled: var(--fg-disabled);
 
-  --color-accent-teal: var(--accent-teal);
-  --color-accent-teal-fg: var(--accent-teal-fg);
   --color-accent-status-green: var(--accent-status-green);
   --color-accent-status-green-fg: var(--accent-status-green-fg);
   --color-accent-red: var(--accent-red);

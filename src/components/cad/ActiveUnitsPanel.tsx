@@ -47,7 +47,7 @@ export function ActiveUnitsPanel() {
         <button
           type="button"
           onClick={() => setView("list")}
-          className={view === "list" ? "text-accent-teal" : "text-fg-muted hover:text-fg"}
+          className={view === "list" ? "text-accent-blue" : "text-fg-muted hover:text-fg"}
           aria-label="List view"
         >
           <Columns3 size={14} />
@@ -55,7 +55,7 @@ export function ActiveUnitsPanel() {
         <button
           type="button"
           onClick={() => setView("grid")}
-          className={view === "grid" ? "text-accent-teal" : "text-fg-muted hover:text-fg"}
+          className={view === "grid" ? "text-accent-blue" : "text-fg-muted hover:text-fg"}
           aria-label="Grid view"
         >
           <LayoutGrid size={14} />

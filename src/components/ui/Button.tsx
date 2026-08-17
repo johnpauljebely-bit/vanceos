@@ -1,11 +1,10 @@
 import { forwardRef } from "react";
 import { cn } from "@/lib/cn";
 
-type Accent = "teal" | "status-green" | "red" | "neutral" | "light-red" | "blue" | "verify-green";
+type Accent = "status-green" | "red" | "neutral" | "light-red" | "blue" | "verify-green";
 type Variant = "boxed" | "plain";
 
 const accentText: Record<Accent, string> = {
-  teal: "text-accent-teal",
   "status-green": "text-accent-status-green",
   red: "text-accent-red",
   neutral: "text-fg",
@@ -15,7 +14,6 @@ const accentText: Record<Accent, string> = {
 };
 
 const accentBorder: Record<Accent, string> = {
-  teal: "border-accent-teal",
   "status-green": "border-accent-status-green",
   red: "border-accent-red",
   neutral: "border-border-subtle",
@@ -41,7 +39,7 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
  * regardless of variant.
  */
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ variant = "plain", accent = "teal", active, icon, disabled, className, children, ...props }, ref) => {
+  ({ variant = "plain", accent = "blue", active, icon, disabled, className, children, ...props }, ref) => {
     return (
       <button
         ref={ref}

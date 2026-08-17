@@ -103,7 +103,7 @@ export function ManageCharactersWindow({
               />
             </div>
             {formError && <p className="text-xs text-accent-red sm:col-span-3">{formError}</p>}
-            <Button type="submit" variant="boxed" accent="teal" disabled={saving} className="self-start sm:col-span-3">
+            <Button type="submit" variant="boxed" accent="blue" disabled={saving} className="self-start sm:col-span-3">
               {saving ? "Saving..." : "Save"}
             </Button>
           </form>
@@ -112,9 +112,9 @@ export function ManageCharactersWindow({
         <DataTable columns={["", "First Name", "Last Name", "DoB"]} isEmpty={!characters || characters.length === 0}>
           {characters?.map((c) => (
             <DataRow key={c.id}>
-              <DataCell>{c.id === currentCharacterId && <Check size={14} className="text-accent-teal" />}</DataCell>
+              <DataCell>{c.id === currentCharacterId && <Check size={14} className="text-accent-blue" />}</DataCell>
               <DataCell>
-                <button type="button" onClick={() => onSelect(c.id)} className="text-fg hover:text-accent-teal">
+                <button type="button" onClick={() => onSelect(c.id)} className="text-fg hover:text-accent-blue">
                   {c.firstName}
                 </button>
               </DataCell>
@@ -128,7 +128,7 @@ export function ManageCharactersWindow({
           <Button variant="plain" accent="neutral" onClick={onClose}>
             Close
           </Button>
-          <Button variant="boxed" accent="teal" icon={<Plus size={14} />} onClick={() => setShowForm((v) => !v)}>
+          <Button variant="boxed" accent="blue" icon={<Plus size={14} />} onClick={() => setShowForm((v) => !v)}>
             Add Character
           </Button>
         </div>

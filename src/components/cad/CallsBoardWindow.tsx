@@ -57,7 +57,7 @@ export function CallsBoardWindow({
               onClick={() => setTab(t)}
               className={cn(
                 "rounded-lg border px-3 py-1.5 text-xs font-medium capitalize",
-                tab === t ? "border-accent-teal text-accent-teal" : "border-transparent text-fg-muted hover:text-fg",
+                tab === t ? "border-accent-blue text-accent-blue" : "border-transparent text-fg-muted hover:text-fg",
               )}
             >
               {t}
@@ -75,13 +75,13 @@ export function CallsBoardWindow({
               <DataCell className="capitalize">{call.source}</DataCell>
               <DataCell>
                 <div className="flex items-center gap-2">
-                  <Button variant="plain" accent="teal" onClick={() => onOpenCall(call)} className="px-0 text-xs">
+                  <Button variant="plain" accent="blue" onClick={() => onOpenCall(call)} className="px-0 text-xs">
                     Open
                   </Button>
                   {tab === "active" ? (
                     <Button
                       variant="plain"
-                      accent="teal"
+                      accent="blue"
                       onClick={() => join(call.id)}
                       disabled={joiningId === call.id}
                       className="px-0 text-xs"
@@ -89,7 +89,7 @@ export function CallsBoardWindow({
                       Join
                     </Button>
                   ) : (
-                    <Button variant="plain" accent="teal" onClick={() => reopen(call.id)} className="px-0 text-xs">
+                    <Button variant="plain" accent="blue" onClick={() => reopen(call.id)} className="px-0 text-xs">
                       Reopen
                     </Button>
                   )}

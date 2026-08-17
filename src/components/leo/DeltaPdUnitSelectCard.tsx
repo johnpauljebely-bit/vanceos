@@ -149,7 +149,7 @@ export function DeltaPdUnitSelectCard() {
                 className={cn(
                   "flex items-center justify-between rounded-lg border px-4 py-3 text-left font-semibold",
                   selectedProfileId === p.id
-                    ? "border-accent-teal text-accent-teal"
+                    ? "border-accent-blue text-accent-blue"
                     : "border-border-subtle text-fg hover:border-fg-muted",
                 )}
               >
@@ -160,7 +160,7 @@ export function DeltaPdUnitSelectCard() {
           </div>
           <Button
             variant="plain"
-            accent="teal"
+            accent="blue"
             icon={<Plus size={14} />}
             disabled={atLimit}
             onClick={() => setShowNewForm(true)}
@@ -177,7 +177,7 @@ export function DeltaPdUnitSelectCard() {
               <button
                 type="button"
                 onClick={() => setShowNewForm(false)}
-                className="text-xs text-accent-teal hover:underline"
+                className="text-xs text-accent-blue hover:underline"
               >
                 Use a saved unit instead
               </button>
@@ -196,7 +196,7 @@ export function DeltaPdUnitSelectCard() {
 
       <Button
         variant="boxed"
-        accent="teal"
+        accent="blue"
         disabled={!inRange || !activeRpName.trim() || entering}
         onClick={enterCad}
         className="justify-center py-3 text-base"

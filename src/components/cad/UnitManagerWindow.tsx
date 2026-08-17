@@ -78,9 +78,9 @@ export function UnitManagerWindow({
             const isCurrent = u.department === currentDepartment && u.number === currentNumber;
             return (
               <DataRow key={`${u.department}-${u.number}`}>
-                <DataCell>{isCurrent && <Check size={14} className="text-accent-teal" />}</DataCell>
+                <DataCell>{isCurrent && <Check size={14} className="text-accent-blue" />}</DataCell>
                 <DataCell>
-                  <button type="button" onClick={() => switchTo(u)} className="text-fg hover:text-accent-teal">
+                  <button type="button" onClick={() => switchTo(u)} className="text-fg hover:text-accent-blue">
                     {u.number}
                   </button>
                 </DataCell>
@@ -103,7 +103,7 @@ export function UnitManagerWindow({
           </Button>
           <Button
             variant="boxed"
-            accent="teal"
+            accent="blue"
             icon={<Plus size={14} />}
             onClick={() => router.push(`/leo/${currentDepartment}/unit-select`)}
           >

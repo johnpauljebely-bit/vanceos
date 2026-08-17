@@ -51,7 +51,7 @@ export function VehicleRegistrationWindow({
         <section className="rounded-xl border border-border-subtle p-4">
           <div className="mb-3 flex items-center gap-3">
             <h3 className="text-lg font-bold text-fg">Owner Information</h3>
-            <span className="rounded-lg border border-accent-teal px-2 py-1 text-xs text-accent-teal">Civilian</span>
+            <span className="rounded-lg border border-accent-blue px-2 py-1 text-xs text-accent-blue">Civilian</span>
           </div>
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
             <ReadOnly label="First Name" value={character.firstName} />
@@ -102,7 +102,7 @@ export function VehicleRegistrationWindow({
         {error && <p className="text-sm text-accent-red">{error}</p>}
 
         <div className="flex gap-3">
-          <Button variant="boxed" accent="teal" icon={<FilePlus size={14} />} onClick={create} disabled={saving}>
+          <Button variant="boxed" accent="blue" icon={<FilePlus size={14} />} onClick={create} disabled={saving}>
             {saving ? "Creating..." : "Create"}
           </Button>
           <Button variant="plain" accent="neutral" icon={<X size={14} />} onClick={onClose}>

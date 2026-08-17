@@ -96,14 +96,14 @@ export function WarrantsBolosWindow({
                 }}
                 className={cn(
                   "rounded-lg border px-3 py-1.5 text-xs font-medium capitalize",
-                  tab === t ? "border-accent-teal text-accent-teal" : "border-transparent text-fg-muted hover:text-fg",
+                  tab === t ? "border-accent-blue text-accent-blue" : "border-transparent text-fg-muted hover:text-fg",
                 )}
               >
                 {t === "warrants" ? "Warrants" : "BOLOs"}
               </button>
             ))}
           </div>
-          <Button variant="boxed" accent="teal" onClick={() => setShowForm((v) => !v)} className="px-3 py-1 text-xs">
+          <Button variant="boxed" accent="blue" onClick={() => setShowForm((v) => !v)} className="px-3 py-1 text-xs">
             {showForm ? "Cancel" : tab === "warrants" ? "New Warrant" : "New BOLO"}
           </Button>
         </div>
@@ -127,7 +127,7 @@ export function WarrantsBolosWindow({
             )}
             <Button
               variant="boxed"
-              accent="teal"
+              accent="blue"
               onClick={tab === "warrants" ? createWarrant : createBolo}
               disabled={saving}
               className="self-start"
@@ -145,7 +145,7 @@ export function WarrantsBolosWindow({
                 <DataCell>{w.charges}</DataCell>
                 <DataCell>{w.signature ?? "---"}</DataCell>
                 <DataCell>
-                  <Button variant="plain" accent="teal" onClick={() => closeWarrant(w.id)} className="px-0 text-xs">
+                  <Button variant="plain" accent="blue" onClick={() => closeWarrant(w.id)} className="px-0 text-xs">
                     Close Warrant
                   </Button>
                 </DataCell>
@@ -160,7 +160,7 @@ export function WarrantsBolosWindow({
                 <DataCell>{b.description}</DataCell>
                 <DataCell className="capitalize">{b.type}</DataCell>
                 <DataCell>
-                  <Button variant="plain" accent="teal" onClick={() => closeBolo(b.id)} className="px-0 text-xs">
+                  <Button variant="plain" accent="blue" onClick={() => closeBolo(b.id)} className="px-0 text-xs">
                     Clear
                   </Button>
                 </DataCell>

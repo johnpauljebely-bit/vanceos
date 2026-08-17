@@ -132,7 +132,7 @@ export function LookupWindow({
               className={cn(
                 "inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-medium",
                 tab === t.id
-                  ? "border-accent-teal text-accent-teal"
+                  ? "border-accent-blue text-accent-blue"
                   : "border-transparent text-fg-muted hover:text-fg",
               )}
             >
@@ -174,7 +174,7 @@ export function LookupWindow({
           </button>
           <Button
             variant="boxed"
-            accent="teal"
+            accent="blue"
             className="ml-auto"
             onClick={search}
             disabled={searching}

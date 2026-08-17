@@ -23,8 +23,8 @@ export function AudioGateOverlay() {
 
   return (
     <div className="fixed inset-0 z-[300] flex items-center justify-center bg-black/70 backdrop-blur-sm">
-      <div className="flex max-w-sm flex-col items-center gap-4 rounded-2xl border border-accent-teal bg-surface p-8 text-center shadow-2xl">
-        <Volume2 size={32} className="text-accent-teal" />
+      <div className="flex max-w-sm flex-col items-center gap-4 rounded-2xl border border-accent-blue bg-surface p-8 text-center shadow-2xl">
+        <Volume2 size={32} className="text-accent-blue" />
         <div>
           <h2 className="text-lg font-bold text-fg">Enable Dispatch Alerts</h2>
           <p className="mt-2 text-sm text-fg-muted">
@@ -35,7 +35,7 @@ export function AudioGateOverlay() {
         <button
           type="button"
           onClick={enable}
-          className="rounded-lg border border-accent-teal px-6 py-2.5 text-sm font-bold text-accent-teal hover:bg-accent-teal/10"
+          className="rounded-lg border border-accent-blue px-6 py-2.5 text-sm font-bold text-accent-blue hover:bg-accent-blue/10"
         >
           Enable Audio
         </button>

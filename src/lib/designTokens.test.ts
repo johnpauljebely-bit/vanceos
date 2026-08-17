@@ -4,9 +4,9 @@ import path from "node:path";
 
 /**
  * Design-token discipline check: components must reach for the named
- * bg/accent-teal/accent-status-green/accent-red Tailwind classes (mapped to
+ * bg/accent-blue/accent-status-green/accent-red Tailwind classes (mapped to
  * CSS vars in globals.css), never a raw hex color — that's what keeps the
- * three accent colors from getting conflated as the app grows.
+ * accent colors from getting conflated as the app grows.
  */
 function collectSourceFiles(dir: string, out: string[] = []) {
   for (const entry of readdirSync(dir)) {

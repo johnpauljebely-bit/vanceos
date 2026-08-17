@@ -19,7 +19,7 @@ export default async function CivilianPortalPage() {
           then type <code className="rounded bg-surface-input px-1.5 py-0.5">;verify &lt;code&gt;</code> in
           game.
         </p>
-        <Link href="/team-select" className="text-sm text-accent-teal underline">
+        <Link href="/team-select" className="text-sm text-accent-blue underline">
           Back to team select
         </Link>
       </main>

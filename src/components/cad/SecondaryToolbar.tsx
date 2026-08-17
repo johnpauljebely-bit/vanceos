@@ -33,7 +33,7 @@ export function SecondaryToolbar({
   return (
     <div className="flex items-center gap-6 border-b border-border-subtle bg-bg px-4 py-2">
       <div className="flex items-center gap-2 text-fg">
-        <Radar size={16} className="text-accent-teal" />
+        <Radar size={16} className="text-accent-blue" />
         <span className="text-sm font-bold">VanceOS</span>
       </div>
 
@@ -42,16 +42,16 @@ export function SecondaryToolbar({
         onOpenDraft={onOpenDraft}
         onOpenWarrantsBolos={onWarrants}
       />
-      <Button variant="plain" accent="teal" icon={<PhoneIncoming size={14} />} onClick={onGetCall}>
+      <Button variant="plain" accent="blue" icon={<PhoneIncoming size={14} />} onClick={onGetCall}>
         Get Call
       </Button>
-      <Button variant="plain" accent="teal" icon={<Search size={14} />} onClick={onSearch}>
+      <Button variant="plain" accent="blue" icon={<Search size={14} />} onClick={onSearch}>
         Search
       </Button>
-      <Button variant="plain" accent="teal" icon={<BookOpen size={14} />} onClick={onRecords}>
+      <Button variant="plain" accent="blue" icon={<BookOpen size={14} />} onClick={onRecords}>
         Records
       </Button>
-      <Button variant="plain" accent="teal" icon={<Gavel size={14} />} onClick={() => onWarrants()}>
+      <Button variant="plain" accent="blue" icon={<Gavel size={14} />} onClick={() => onWarrants()}>
         Warrants
       </Button>
 

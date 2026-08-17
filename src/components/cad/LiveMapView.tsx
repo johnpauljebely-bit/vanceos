@@ -99,7 +99,7 @@ export function LiveMapView() {
         <div className="flex items-center gap-4">
           <Link
             href={cadHref}
-            className="inline-flex items-center gap-1.5 text-sm font-medium text-fg-muted hover:text-accent-teal"
+            className="inline-flex items-center gap-1.5 text-sm font-medium text-fg-muted hover:text-accent-blue"
           >
             <ArrowLeft size={14} /> Back to CAD
           </Link>
@@ -119,7 +119,7 @@ export function LiveMapView() {
           title="Show/hide units"
           className={cn(
             "flex h-9 w-9 items-center justify-center rounded-lg border",
-            showUnits ? "border-accent-teal bg-accent-teal/10 text-accent-teal" : "border-border-subtle text-fg-muted",
+            showUnits ? "border-accent-blue bg-accent-blue/10 text-accent-blue" : "border-border-subtle text-fg-muted",
           )}
         >
           <User size={16} />
@@ -131,7 +131,7 @@ export function LiveMapView() {
           title="Show/hide calls"
           className={cn(
             "flex h-9 w-9 items-center justify-center rounded-lg border",
-            showCalls ? "border-accent-teal bg-accent-teal/10 text-accent-teal" : "border-border-subtle text-fg-muted",
+            showCalls ? "border-accent-blue bg-accent-blue/10 text-accent-blue" : "border-border-subtle text-fg-muted",
           )}
         >
           <Phone size={16} />

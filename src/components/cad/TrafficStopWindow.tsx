@@ -110,7 +110,7 @@ export function TrafficStopWindow({ onClose }: { onClose: () => void }) {
                   className={cn(
                     "rounded-lg border px-4 py-2 text-sm",
                     needsAdditional === opt.value
-                      ? "border-accent-teal text-accent-teal"
+                      ? "border-accent-blue text-accent-blue"
                       : "border-border-subtle text-fg-muted hover:text-fg",
                   )}
                 >
@@ -136,7 +136,7 @@ export function TrafficStopWindow({ onClose }: { onClose: () => void }) {
               </p>
             </div>
           )}
-          <Button variant="boxed" accent="teal" onClick={submit} disabled={!canSubmit || sending} className="self-start">
+          <Button variant="boxed" accent="blue" onClick={submit} disabled={!canSubmit || sending} className="self-start">
             {sending ? "Broadcasting..." : "Broadcast Traffic Stop"}
           </Button>
         </div>

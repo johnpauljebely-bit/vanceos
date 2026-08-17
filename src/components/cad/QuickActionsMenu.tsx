@@ -34,7 +34,7 @@ export function QuickActionsMenu({
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="flex h-9 w-9 items-center justify-center rounded-lg border border-border-subtle text-accent-teal hover:bg-white/5"
+        className="flex h-9 w-9 items-center justify-center rounded-lg border border-border-subtle text-accent-blue hover:bg-white/5"
         aria-label="Quick actions"
       >
         <Radar size={18} />

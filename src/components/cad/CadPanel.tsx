@@ -183,12 +183,12 @@ export function CadPanel({
   }
 
   const quickActions: QuickAction[] = [
-    { id: "lookup", label: "Lookup", icon: <Search size={14} className="text-accent-teal" />, end: "Window" },
-    { id: "records", label: "Records", icon: <FileText size={14} className="text-accent-teal" />, end: "Window" },
-    { id: "warrants", label: "Warrants & BOLOs", icon: <Gavel size={14} className="text-accent-teal" />, end: "Window" },
-    { id: "notepad", label: "Notepad", icon: <StickyNote size={14} className="text-accent-teal" />, end: "Window" },
-    { id: "home", label: "Home", icon: <Home size={14} className="text-accent-teal" />, end: "Nav" },
-    { id: "map", label: "Map", icon: <MapIcon size={14} className="text-accent-teal" />, end: "Nav" },
+    { id: "lookup", label: "Lookup", icon: <Search size={14} className="text-accent-blue" />, end: "Window" },
+    { id: "records", label: "Records", icon: <FileText size={14} className="text-accent-blue" />, end: "Window" },
+    { id: "warrants", label: "Warrants & BOLOs", icon: <Gavel size={14} className="text-accent-blue" />, end: "Window" },
+    { id: "notepad", label: "Notepad", icon: <StickyNote size={14} className="text-accent-blue" />, end: "Window" },
+    { id: "home", label: "Home", icon: <Home size={14} className="text-accent-blue" />, end: "Nav" },
+    { id: "map", label: "Map", icon: <MapIcon size={14} className="text-accent-blue" />, end: "Nav" },
   ];
 
   function handleQuickAction(action: QuickAction) {

@@ -66,14 +66,14 @@ export function RecordsWindow({ onClose }: { onClose: () => void }) {
                 onClick={() => setTab(t)}
                 className={cn(
                   "rounded-lg border px-3 py-1.5 text-xs font-medium",
-                  tab === t ? "border-accent-teal text-accent-teal" : "border-transparent text-fg-muted hover:text-fg",
+                  tab === t ? "border-accent-blue text-accent-blue" : "border-transparent text-fg-muted hover:text-fg",
                 )}
               >
                 {t === "all" ? "All Records" : "My Files"}
               </button>
             ))}
           </div>
-          <Button variant="boxed" accent="teal" onClick={() => setShowForm((v) => !v)} className="px-3 py-1 text-xs">
+          <Button variant="boxed" accent="blue" onClick={() => setShowForm((v) => !v)} className="px-3 py-1 text-xs">
             {showForm ? "Cancel" : "New Record"}
           </Button>
         </div>
@@ -105,7 +105,7 @@ export function RecordsWindow({ onClose }: { onClose: () => void }) {
               <Textarea value={content} onChange={(e) => setContent(e.target.value)} className="mt-1 min-h-32" />
             </div>
             <div className="flex gap-3">
-              <Button variant="boxed" accent="teal" onClick={() => create("final")} disabled={saving} className="self-start">
+              <Button variant="boxed" accent="blue" onClick={() => create("final")} disabled={saving} className="self-start">
                 {saving ? "Saving..." : "Create Record"}
               </Button>
               <Button variant="plain" accent="neutral" onClick={() => create("draft")} disabled={saving}>

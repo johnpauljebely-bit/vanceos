@@ -82,7 +82,7 @@ export function CivilianCharacterEditWindow({
           </div>
           <Button
             variant="plain"
-            accent="teal"
+            accent="light-red"
             icon={<Sparkles size={14} />}
             onClick={useRobloxAvatar}
             disabled={avatarLoading}

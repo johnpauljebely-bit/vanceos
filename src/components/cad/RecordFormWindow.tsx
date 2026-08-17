@@ -127,10 +127,10 @@ export function RecordFormWindow({
         <section className="rounded-xl border border-border-subtle p-4">
           <div className="mb-3 flex items-center gap-3">
             <h3 className="text-lg font-bold text-fg">Driver</h3>
-            <Button variant="boxed" accent="teal" className="px-3 py-1 text-xs" icon={<Search size={12} />} onClick={() => onOpenLookup("name")}>
+            <Button variant="boxed" accent="blue" className="px-3 py-1 text-xs" icon={<Search size={12} />} onClick={() => onOpenLookup("name")}>
               Civilian
             </Button>
-            <Button variant="boxed" accent="teal" className="px-3 py-1 text-xs" icon={<Search size={12} />} onClick={() => onOpenLookup("licence")}>
+            <Button variant="boxed" accent="blue" className="px-3 py-1 text-xs" icon={<Search size={12} />} onClick={() => onOpenLookup("licence")}>
               Licence
             </Button>
           </div>
@@ -168,7 +168,7 @@ export function RecordFormWindow({
           <section className="rounded-xl border border-border-subtle p-4">
             <div className="mb-3 flex items-center gap-3">
               <h3 className="text-lg font-bold text-fg">Vehicle</h3>
-              <Button variant="boxed" accent="teal" className="px-3 py-1 text-xs" icon={<Search size={12} />} onClick={() => onOpenLookup("vehicle")}>
+              <Button variant="boxed" accent="blue" className="px-3 py-1 text-xs" icon={<Search size={12} />} onClick={() => onOpenLookup("vehicle")}>
                 Vehicle
               </Button>
             </div>
@@ -204,7 +204,7 @@ export function RecordFormWindow({
         )}
 
         <div className="flex gap-3">
-          <Button variant="boxed" accent="teal" icon={<FilePlus size={14} />} onClick={create} disabled={saving}>
+          <Button variant="boxed" accent="blue" icon={<FilePlus size={14} />} onClick={create} disabled={saving}>
             {saving ? "Creating..." : "Create"}
           </Button>
           <Button variant="plain" accent="neutral" icon={<X size={14} />} onClick={closeAndMaybeSaveDraft}>

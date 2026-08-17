@@ -131,7 +131,7 @@ export function UnitSelectCard({ department, callsigns }: { department: string; 
               onClick={() => setSelected(c)}
               className={cn(
                 "flex items-center justify-between rounded-lg border px-4 py-3 text-left",
-                isSelected ? "border-accent-teal text-accent-teal" : "border-border-subtle text-fg hover:border-fg-muted",
+                isSelected ? "border-accent-blue text-accent-blue" : "border-border-subtle text-fg hover:border-fg-muted",
               )}
             >
               <span className="inline-flex items-center gap-2 font-semibold">
@@ -158,7 +158,7 @@ export function UnitSelectCard({ department, callsigns }: { department: string; 
                 className={cn(
                   "flex items-center justify-between rounded-lg border px-4 py-3 text-left",
                   selectedProfileId === p.id
-                    ? "border-accent-teal text-accent-teal"
+                    ? "border-accent-blue text-accent-blue"
                     : "border-border-subtle text-fg hover:border-fg-muted",
                 )}
               >
@@ -174,7 +174,7 @@ export function UnitSelectCard({ department, callsigns }: { department: string; 
           </div>
           <Button
             variant="plain"
-            accent="teal"
+            accent="blue"
             icon={<Plus size={14} />}
             disabled={atLimit}
             onClick={() => setShowNewForm(true)}
@@ -191,7 +191,7 @@ export function UnitSelectCard({ department, callsigns }: { department: string; 
               <button
                 type="button"
                 onClick={() => setShowNewForm(false)}
-                className="text-xs text-accent-teal hover:underline"
+                className="text-xs text-accent-blue hover:underline"
               >
                 Use a saved unit instead
               </button>
@@ -232,7 +232,7 @@ export function UnitSelectCard({ department, callsigns }: { department: string; 
 
       <Button
         variant="boxed"
-        accent="teal"
+        accent="blue"
         disabled={!selected || !canEnter || entering}
         onClick={enterCad}
         className="justify-center py-3 text-base"

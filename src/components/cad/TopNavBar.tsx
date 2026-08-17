@@ -57,7 +57,7 @@ export function TopNavBar({
           href={cadHref}
           className={cn(
             "text-sm font-bold",
-            isHome ? "text-accent-teal" : "text-fg-muted hover:text-fg",
+            isHome ? "text-accent-blue" : "text-fg-muted hover:text-fg",
           )}
         >
           Home
@@ -66,14 +66,14 @@ export function TopNavBar({
           href={mapHref}
           className={cn(
             "inline-flex items-center gap-1.5 text-sm font-medium",
-            isMap ? "text-accent-teal" : "text-fg-muted hover:text-fg",
+            isMap ? "text-accent-blue" : "text-fg-muted hover:text-fg",
           )}
         >
           <Map size={14} /> Map
         </Link>
         <Button
           variant="plain"
-          accent={selfDispatchState === "on" ? "teal" : "neutral"}
+          accent={selfDispatchState === "on" ? "blue" : "neutral"}
           active={selfDispatchState === "on"}
           onClick={onRequestSelfDispatch}
           disabled={selfDispatchState === "waiting"}

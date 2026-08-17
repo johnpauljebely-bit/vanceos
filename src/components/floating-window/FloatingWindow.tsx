@@ -10,7 +10,7 @@ export function FloatingWindow({
   onClose,
   initial = { x: 160, y: 120 },
   width = 720,
-  accentVar = "--accent-teal",
+  accentVar = "--accent-blue",
   children,
 }: {
   title: string;
@@ -78,21 +78,21 @@ export function FloatingWindow({
         aria-label={title}
         onPointerDown={() => focus(id)}
         className={cn(
-          "fixed overflow-hidden rounded-xl border border-border-subtle bg-surface shadow-2xl",
+          "fixed flex flex-col overflow-hidden rounded-xl border border-border-subtle bg-surface shadow-2xl",
           fullscreen && "inset-6",
         )}
         style={
           fullscreen
             ? { zIndex: zIndexOf(id) }
-            : { left: pos.x, top: pos.y, width, zIndex: zIndexOf(id) }
+            : { left: pos.x, top: pos.y, width, maxHeight: "calc(100vh - 48px)", zIndex: zIndexOf(id) }
         }
       >
-        <div className="h-[2px] w-full" style={{ background: accent }} />
+        <div className="h-[2px] w-full shrink-0" style={{ background: accent }} />
         <div
           onPointerDown={onTitlePointerDown}
           onPointerMove={onTitlePointerMove}
           onPointerUp={onTitlePointerUp}
-          className="flex cursor-move items-center justify-between border-b border-border-subtle bg-surface-input px-4 py-2 select-none"
+          className="flex shrink-0 cursor-move items-center justify-between border-b border-border-subtle bg-surface-input px-4 py-2 select-none"
         >
           <div className="flex items-center gap-2">
             <button
@@ -152,7 +152,7 @@ export function FloatingWindow({
             </button>
           </div>
         </div>
-        {!minimized && <div className="p-4">{children}</div>}
+        {!minimized && <div className="min-h-0 overflow-y-auto p-4">{children}</div>}
       </div>
     </>
   );
