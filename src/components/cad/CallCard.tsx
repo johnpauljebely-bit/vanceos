@@ -64,7 +64,7 @@ export function CallCard({
 
       {call.description && <p className="line-clamp-2 text-xs text-fg-muted">{call.description}</p>}
 
-      <CallLocationThumbnail postal={call.postal} accentVar={accentVar} className="h-20" />
+      <CallLocationThumbnail postal={call.postal} accentVar={accentVar} className="h-28" />
 
       <div className="flex gap-2">
         <Button variant="plain" accent="neutral" icon={<Pencil size={12} />} onClick={onEdit} className="text-xs">

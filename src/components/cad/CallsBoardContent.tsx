@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { AlertCircle, Check, User } from "lucide-react";
+import { AlertCircle, AlertTriangle, Check, User } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { CallLocationThumbnail } from "./CallLocationThumbnail";
@@ -132,9 +132,16 @@ export function CallsBoardContent({
                 </div>
                 {tab === "archives" ? (
                   <div className="flex items-center gap-1.5 text-[11px] text-fg-muted">
-                    <Check size={11} className="text-accent-status-green" />
+                    {call.status === "incomplete" ? (
+                      <>
+                        <AlertTriangle size={11} className="text-accent-red" />
+                        <span className="font-semibold text-accent-red">Incomplete</span>
+                      </>
+                    ) : (
+                      <Check size={11} className="text-accent-status-green" />
+                    )}
                     {formatWhen(call.clearedAt)}
-                    {call.clearedBy && (
+                    {call.clearedBy && call.clearedBy !== "Auto-archived" && (
                       <>
                         <span className="text-fg-disabled">·</span>
                         <User size={11} />

@@ -1,9 +1,25 @@
-import { and, desc, eq, gt, isNull, isNotNull } from "drizzle-orm";
+import { and, desc, eq, gt, lt, isNull, isNotNull } from "drizzle-orm";
 import { nanoid } from "nanoid";
 import { db } from "@/db";
 import { calls, callNotes, callUnits, liveUnits } from "@/db/schema";
 
+// A call left open this long without being cleared almost certainly isn't
+// actually being worked — auto-archive it as "incomplete" rather than
+// letting it sit in Active forever. Enforced at read-time (query-time),
+// not a background job — this app has no cron infra, so every call to
+// listActiveCalls() is also the trigger to sweep anything gone stale.
+const STALE_CALL_MS = 30 * 60 * 1000;
+
+async function archiveStaleCalls() {
+  const cutoff = new Date(Date.now() - STALE_CALL_MS).toISOString();
+  await db
+    .update(calls)
+    .set({ clearedAt: new Date().toISOString(), status: "incomplete", clearedBy: "Auto-archived" })
+    .where(and(isNull(calls.clearedAt), lt(calls.createdAt, cutoff)));
+}
+
 export async function listActiveCalls() {
+  await archiveStaleCalls();
   return db.select().from(calls).where(isNull(calls.clearedAt)).orderBy(desc(calls.createdAt));
 }
 

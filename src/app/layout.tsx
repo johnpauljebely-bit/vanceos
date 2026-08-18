@@ -24,7 +24,12 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       className={`${poppins.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      {/* Fixed to viewport height, not min-h-full — this is an app shell,
+          not a scrolling page. Individual panels (CadHomePanel, floating
+          windows, etc.) own their own overflow-y-auto; the page itself
+          must never scroll (confirmed: no Lenis here to worry about,
+          unlike the portfolio site). */}
+      <body className="h-full overflow-hidden flex flex-col">{children}</body>
     </html>
   );
 }

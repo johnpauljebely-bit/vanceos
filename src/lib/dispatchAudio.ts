@@ -15,6 +15,8 @@
  *    tab — it can't reach an officer who isn't looking at the site at all.
  */
 
+import { loadDispatchAlertMuted } from "./cadSettings";
+
 let audioContext: AudioContext | null = null;
 
 export function isAudioUnlocked(): boolean {
@@ -47,6 +49,7 @@ function beep(ctx: AudioContext, frequency: number, startTime: number, duration:
 /** "beep boop beep boop" then speaks the assignment. Silently no-ops if audio was never unlocked. */
 export function playDispatchAlert(callsign: string, postal: string) {
   if (!audioContext || audioContext.state !== "running") return;
+  if (loadDispatchAlertMuted()) return;
 
   const now = audioContext.currentTime;
   const pattern = [880, 660, 880, 660]; // beep, boop, beep, boop

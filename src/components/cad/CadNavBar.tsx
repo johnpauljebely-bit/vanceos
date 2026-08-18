@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { Headset } from "lucide-react";
 import { UnitBadgePill } from "@/components/ui/Pill";
-import { SignOutButton } from "@/components/ui/SignOutButton";
+import { CadAccountMenu } from "./CadAccountMenu";
 import { LiveClock } from "./LiveClock";
 import { StatusDropdown } from "./StatusDropdown";
 import { PanicDropdown } from "./PanicDropdown";
@@ -30,6 +30,7 @@ export function CadNavBar({
   quickActions,
   onQuickAction,
   onOpenUnitManager,
+  clockFormat,
 }: {
   department: string;
   unitNumber: number;
@@ -40,6 +41,7 @@ export function CadNavBar({
   quickActions: QuickAction[];
   onQuickAction: (action: QuickAction) => void;
   onOpenUnitManager: () => void;
+  clockFormat?: "24h" | "12h";
 }) {
   const accentId = accentIdForDepartment(department);
 
@@ -85,8 +87,8 @@ export function CadNavBar({
       </div>
 
       <PanicDropdown />
-      <LiveClock />
-      <SignOutButton />
+      <LiveClock clockFormat={clockFormat} />
+      <CadAccountMenu />
     </div>
   );
 }

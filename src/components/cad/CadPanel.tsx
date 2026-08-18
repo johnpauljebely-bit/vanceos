@@ -20,8 +20,9 @@ import { LookupWindow } from "./lookup/LookupWindow";
 import { LookupContent } from "./lookup/LookupContent";
 import { CallsBoardWindow, type BoardCall } from "./CallsBoardWindow";
 import { CallsBoardContent } from "./CallsBoardContent";
-import { WarrantsBolosWindow } from "./WarrantsBolosWindow";
-import { RecordsWindow } from "./RecordsWindow";
+import { RecordsWarrantsWindow } from "./RecordsWarrantsWindow";
+import { RecordsWarrantsContent, type RecordsWarrantsCategory } from "./RecordsWarrantsContent";
+import { CadSettingsContent } from "./CadSettingsContent";
 import { RecordFormWindow, type RecordType } from "./RecordFormWindow";
 import { UnitManagerWindow } from "./UnitManagerWindow";
 import { TrafficStopWindow } from "./TrafficStopWindow";
@@ -30,11 +31,19 @@ import type { QuickAction } from "./QuickActionSearchBar";
 import type { UnitStatus } from "@/lib/unitStatus";
 import { accentVarForDepartment, accentTextClassForDepartment } from "@/lib/departmentAccent";
 import { loadLayoutMode, saveLayoutMode, type LayoutMode } from "@/lib/layoutMode";
+import {
+  loadDispatchAlertMuted,
+  saveDispatchAlertMuted,
+  loadMapOverviewVisible,
+  saveMapOverviewVisible,
+  loadClockFormat,
+  saveClockFormat,
+  type ClockFormat,
+} from "@/lib/cadSettings";
 
-// Splitscreen currently only has adapted content for these two tabs — see
-// CadSettingsWindow's own note. Everything else still opens as a window
-// even when layoutMode is "split".
-const SPLIT_ADAPTED_TABS: SidebarItemId[] = ["search", "call-lookup"];
+// Every sidebar tab with adapted splitscreen content — everything else
+// still opens as a window even when layoutMode is "split".
+const SPLIT_ADAPTED_TABS: SidebarItemId[] = ["search", "call-lookup", "records", "settings"];
 
 interface ActiveCall {
   id: string;
@@ -62,10 +71,8 @@ export function CadPanel({
   const [lookupOpen, setLookupOpen] = useState(false);
   const [lookupTab, setLookupTab] = useState<"name" | "vehicle" | "licence">("name");
   const [callsBoardOpen, setCallsBoardOpen] = useState(false);
-  const [warrantsBolosOpen, setWarrantsBolosOpen] = useState(false);
-  const [warrantsBolosTab, setWarrantsBolosTab] = useState<"warrants" | "bolos">("warrants");
-  const [warrantsBolosAutoForm, setWarrantsBolosAutoForm] = useState(false);
   const [recordsOpen, setRecordsOpen] = useState(false);
+  const [recordsCategory, setRecordsCategory] = useState<RecordsWarrantsCategory>("records");
   const [recordForm, setRecordForm] = useState<{ type: RecordType; draft?: DraftSummary & { details: Record<string, string> | null; subjectName: string | null } } | null>(null);
   const [unitManagerOpen, setUnitManagerOpen] = useState(false);
   const [trafficStopOpen, setTrafficStopOpen] = useState(false);
@@ -78,10 +85,25 @@ export function CadPanel({
   // first client render instead of flashing "windows" then jumping to the
   // saved mode a tick later. loadLayoutMode() itself guards the SSR case.
   const [layoutMode, setLayoutMode] = useState<LayoutMode>(() => loadLayoutMode());
+  const [dispatchAlertMuted, setDispatchAlertMuted] = useState(() => loadDispatchAlertMuted());
+  const [mapOverviewVisible, setMapOverviewVisible] = useState(() => loadMapOverviewVisible());
+  const [clockFormat, setClockFormat] = useState<ClockFormat>(() => loadClockFormat());
 
   function changeLayoutMode(mode: LayoutMode) {
     setLayoutMode(mode);
     saveLayoutMode(mode);
+  }
+  function changeDispatchAlertMuted(muted: boolean) {
+    setDispatchAlertMuted(muted);
+    saveDispatchAlertMuted(muted);
+  }
+  function changeMapOverviewVisible(visible: boolean) {
+    setMapOverviewVisible(visible);
+    saveMapOverviewVisible(visible);
+  }
+  function changeClockFormat(fmt: ClockFormat) {
+    setClockFormat(fmt);
+    saveClockFormat(fmt);
   }
 
   // Entering the panel with a unit selected IS being on duty — Active Units
@@ -188,10 +210,10 @@ export function CadPanel({
     setCallsBoardOpen(false);
   }
 
-  function openWarrantsBolos(tab: "warrants" | "bolos" = "warrants", autoForm = false) {
-    setWarrantsBolosTab(tab);
-    setWarrantsBolosAutoForm(autoForm);
-    setWarrantsBolosOpen(true);
+  function openRecordsWarrants(category: RecordsWarrantsCategory = "records") {
+    setRecordsCategory(category);
+    setSidebarActive("records");
+    if (layoutMode !== "split") setRecordsOpen(true);
   }
 
   function startRecord(type: RecordType) {
@@ -227,12 +249,10 @@ export function CadPanel({
         if (layoutMode !== "split") setLookupOpen(true);
         break;
       case "records":
-        setSidebarActive("records");
-        setRecordsOpen(true);
+        openRecordsWarrants("records");
         break;
       case "warrants":
-        setSidebarActive("warrants");
-        openWarrantsBolos("warrants");
+        openRecordsWarrants("warrants");
         break;
       case "notepad":
         setSidebarActive("notepad");
@@ -245,10 +265,8 @@ export function CadPanel({
     setViewedCall({ id: call.id, title: call.title });
   }
 
-  // Only Search/Call Lookup have adapted splitscreen content today — every
-  // other sidebar tab still opens as a window even in split mode, so the
-  // panel only widens for the two that actually have somewhere to put the
-  // extra space (see SPLIT_ADAPTED_TABS / CadSettingsWindow's note).
+  // The panel only widens for tabs that actually have adapted splitscreen
+  // content to fill it with — see SPLIT_ADAPTED_TABS.
   const isWideSplit = layoutMode === "split" && SPLIT_ADAPTED_TABS.includes(sidebarActive);
 
   return (
@@ -264,6 +282,7 @@ export function CadPanel({
           quickActions={quickActions}
           onQuickAction={handleQuickAction}
           onOpenUnitManager={() => setUnitManagerOpen(true)}
+          clockFormat={clockFormat}
         />
 
         <div className="relative flex flex-1 overflow-hidden">
@@ -279,14 +298,7 @@ export function CadPanel({
               setSidebarActive("call-lookup");
               if (layoutMode !== "split") setCallsBoardOpen(true);
             }}
-            onRecords={() => {
-              setSidebarActive("records");
-              setRecordsOpen(true);
-            }}
-            onWarrants={() => {
-              setSidebarActive("warrants");
-              openWarrantsBolos("warrants");
-            }}
+            onRecords={() => openRecordsWarrants("records")}
             onTrafficStop={() => {
               setSidebarActive("traffic-stop");
               setTrafficStopOpen(true);
@@ -297,14 +309,11 @@ export function CadPanel({
             }}
             onSettings={() => {
               setSidebarActive("settings");
-              setSettingsOpen(true);
+              if (layoutMode !== "split") setSettingsOpen(true);
             }}
             onCreateRecord={startRecord}
             onOpenDraft={openDraft}
-            onOpenWarrantsBolosTab={(tab) => {
-              setSidebarActive("warrants");
-              openWarrantsBolos(tab);
-            }}
+            onOpenWarrantsBolosTab={(tab) => openRecordsWarrants(tab)}
             accentVar={accentVar}
           />
 
@@ -319,6 +328,24 @@ export function CadPanel({
                 <div className="p-4">
                   <CallsBoardContent onOpenCall={openCallFromBoard} onJoined={() => setStatus("enroute")} accentVar={accentVar} expanded />
                 </div>
+              ) : isWideSplit && sidebarActive === "records" ? (
+                <div className="p-4">
+                  <RecordsWarrantsContent accentVar={accentVar} expanded initialCategory={recordsCategory} />
+                </div>
+              ) : isWideSplit && sidebarActive === "settings" ? (
+                <div className="p-4">
+                  <CadSettingsContent
+                    layoutMode={layoutMode}
+                    onLayoutModeChange={changeLayoutMode}
+                    dispatchAlertMuted={dispatchAlertMuted}
+                    onDispatchAlertMutedChange={changeDispatchAlertMuted}
+                    mapOverviewVisible={mapOverviewVisible}
+                    onMapOverviewVisibleChange={changeMapOverviewVisible}
+                    clockFormat={clockFormat}
+                    onClockFormatChange={changeClockFormat}
+                    accentVar={accentVar}
+                  />
+                </div>
               ) : (
                 <CadHomePanel onEditCall={openCallDetail} accentVar={accentVar} />
               )
@@ -326,7 +353,7 @@ export function CadPanel({
             right={
               <>
                 <LiveMapView embedded accentVar={accentVar} />
-                <CadMapOverview />
+                <CadMapOverview visible={mapOverviewVisible} onVisibleChange={changeMapOverviewVisible} />
               </>
             }
           />
@@ -358,15 +385,13 @@ export function CadPanel({
           accentVar={accentVar}
         />
       )}
-      {warrantsBolosOpen && (
-        <WarrantsBolosWindow
-          initialTab={warrantsBolosTab}
-          autoShowForm={warrantsBolosAutoForm}
-          onClose={() => setWarrantsBolosOpen(false)}
+      {recordsOpen && (
+        <RecordsWarrantsWindow
+          initialCategory={recordsCategory}
+          onClose={() => setRecordsOpen(false)}
           accentVar={accentVar}
         />
       )}
-      {recordsOpen && <RecordsWindow onClose={() => setRecordsOpen(false)} accentVar={accentVar} />}
       {recordForm && (
         <RecordFormWindow
           recordType={recordForm.type}
@@ -401,6 +426,12 @@ export function CadPanel({
           onClose={() => setSettingsOpen(false)}
           layoutMode={layoutMode}
           onLayoutModeChange={changeLayoutMode}
+          dispatchAlertMuted={dispatchAlertMuted}
+          onDispatchAlertMutedChange={changeDispatchAlertMuted}
+          mapOverviewVisible={mapOverviewVisible}
+          onMapOverviewVisibleChange={changeMapOverviewVisible}
+          clockFormat={clockFormat}
+          onClockFormatChange={changeClockFormat}
           accentVar={accentVar}
         />
       )}

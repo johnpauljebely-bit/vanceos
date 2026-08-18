@@ -1,6 +1,6 @@
 "use client";
 
-import { Home, Search, PhoneIncoming, BookOpen, Gavel, Car, StickyNote, Settings } from "lucide-react";
+import { Home, Search, PhoneIncoming, Gavel, Car, StickyNote, Settings } from "lucide-react";
 import { accentIdFromVar } from "@/lib/departmentAccent";
 import { NewRecordDropdown } from "./NewRecordDropdown";
 import type { RecordType } from "./RecordFormWindow";
@@ -17,7 +17,6 @@ export type SidebarItemId =
   | "search"
   | "call-lookup"
   | "records"
-  | "warrants"
   | "traffic-stop"
   | "notepad"
   | "settings";
@@ -33,7 +32,6 @@ export function CadSidebar({
   onSearch,
   onCallLookup,
   onRecords,
-  onWarrants,
   onTrafficStop,
   onNotepad,
   onSettings,
@@ -47,7 +45,6 @@ export function CadSidebar({
   onSearch: () => void;
   onCallLookup: () => void;
   onRecords: () => void;
-  onWarrants: () => void;
   onTrafficStop: () => void;
   onNotepad: () => void;
   onSettings: () => void;
@@ -65,8 +62,7 @@ export function CadSidebar({
   const items: { id: SidebarItemId; label: string; icon: React.ReactNode; onClick?: () => void; disabled?: boolean }[] = [
     { id: "search", label: "Search", icon: <Search size={18} />, onClick: onSearch },
     { id: "call-lookup", label: "Call Lookup", icon: <PhoneIncoming size={18} />, onClick: onCallLookup },
-    { id: "records", label: "Records", icon: <BookOpen size={18} />, onClick: onRecords },
-    { id: "warrants", label: "Warrants & BOLOs", icon: <Gavel size={18} />, onClick: onWarrants },
+    { id: "records", label: "Records & Warrants", icon: <Gavel size={18} />, onClick: onRecords },
     { id: "traffic-stop", label: "Traffic Stop", icon: <Car size={18} />, onClick: onTrafficStop },
     { id: "notepad", label: "Notepad", icon: <StickyNote size={18} />, onClick: onNotepad },
     { id: "settings", label: "Settings", icon: <Settings size={18} />, onClick: onSettings },

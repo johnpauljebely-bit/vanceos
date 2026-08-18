@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { X } from "lucide-react";
 import { useLiveQuery } from "@/lib/useLiveQuery";
 import { UNIT_STATUS_COLOR, UNIT_STATUS_LABEL, UNIT_STATUSES, type UnitStatus } from "@/lib/unitStatus";
@@ -17,13 +16,14 @@ interface LiveUnit {
  * duplicate of the sidebar's full Active Units list. Matches the
  * reference's "Overview" widget, sized down to what we actually have data
  * for (no ER:LC-wide player tracking here, just our own live units).
+ * Visibility is controlled by the parent (persisted in Settings) so the
+ * close button here and the Settings toggle stay in sync.
  */
-export function CadMapOverview() {
-  const [open, setOpen] = useState(true);
+export function CadMapOverview({ visible, onVisibleChange }: { visible: boolean; onVisibleChange: (v: boolean) => void }) {
   const { data } = useLiveQuery<{ liveUnits: LiveUnit[] }>("/api/live-units");
   const units = (data?.liveUnits ?? []).filter((u) => u.onDuty);
 
-  if (!open) return null;
+  if (!visible) return null;
 
   const counts = UNIT_STATUSES.map((s) => ({
     status: s,
@@ -36,7 +36,7 @@ export function CadMapOverview() {
         <span className="text-xs font-bold uppercase tracking-wide text-fg-muted">Overview</span>
         <div className="flex items-center gap-2">
           <span className="text-xs font-bold text-fg">{units.length} active</span>
-          <button type="button" onClick={() => setOpen(false)} aria-label="Close overview" className="text-fg-muted hover:text-fg">
+          <button type="button" onClick={() => onVisibleChange(false)} aria-label="Close overview" className="text-fg-muted hover:text-fg">
             <X size={12} />
           </button>
         </div>

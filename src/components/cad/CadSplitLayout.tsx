@@ -52,7 +52,7 @@ export function CadSplitLayout({
       <div
         style={{ width: containerWidth ? rightWidth : undefined }}
         className={cn(
-          "relative shrink-0 overflow-hidden transition-[width] duration-300 ease-in-out",
+          "relative flex shrink-0 flex-col overflow-hidden transition-[width] duration-300 ease-in-out",
           !containerWidth && (wide ? "w-[340px]" : "flex-1"),
         )}
       >
